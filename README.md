@@ -1,7 +1,8 @@
-# AssemblyTask — IROS 2026 vega_1u pick-and-place challenge
+# 🏭 Industrial Task Board Assembly Track — 2nd RoCo Challenge @ IROS 2026
 
-Scene assets, robot description, per-part USDs, and the Isaac Sim
-evaluation harness for the vega_1u bimanual pick-and-place challenge.
+Official scene assets, robot description files, per-part USDs, and the Isaac
+Sim evaluation harness for the **Industrial Task Board Assembly** Track of the
+**2nd RoCo Challenge @ IROS 2026**.
 The harness walks a fixed `part_order`, hands each part off to the
 participant's `Policy`, and either snaps the part rigidly into its slot
 (connectors / pin / rod) or lets gravity settle it on a slot (gears /
@@ -11,7 +12,7 @@ Participants implement one class — see
 [`task/policy_api.py`](task/policy_api.py) and copy
 [`task/policies/template.py`](task/policies/template.py).
 
-## Directory structure
+## 📁 Repository Structure
 
 ```
 AssemblyTask/
@@ -66,7 +67,7 @@ tucked at `INIT_JOINT_TARGETS`. The runner's controllers
 participant policy can command R as well by addressing the R arm dof
 indices via `EnvInfo.R_arm_joints`.
 
-## Part checklist
+## 🧩 Task Part Checklist
 
 `task/param_config.py::part_order` is the source of truth for runtime
 order. Each entry has a `PART_CONFIG` block. Release mode is what
@@ -106,12 +107,12 @@ finds every prim already present and spawns nothing. `_apply_mesh_colliders()`
 applied `UsdPhysics.CollisionAPI` + the configured approximation when the
 scene was authored, so the parts are physical on load.
 
-## Snap: rigid anchoring vs natural fall-off
+## 🧲 Placement Mechanics
 
 Two release strategies live side by side, picked by
 `PART_CONFIG[name]["release_mode"]`:
 
-### `release_mode = "snap"` — proximity-triggered FixedJoint
+### 🔒 `release_mode = "snap"` — Proximity-Triggered FixedJoint
 
 For connectors, bolts, the pin, and the rod, the gripper rarely lands
 the part within the millimetre-scale tolerance of a real socket. Even
@@ -172,7 +173,7 @@ Configure per-part inside `PART_CONFIG[name]["snap"]`:
 },
 ```
 
-### `release_mode = "open"` — natural fall-off
+### 🍃 `release_mode = "open"` — Natural Fall-Off
 
 For the gears and batteries, the slot geometry does the work. The
 gripper opens at `place_pos`, the part falls a few millimetres, and
@@ -195,7 +196,7 @@ Two consequences worth flagging:
   a known crash combo (see `task/README.md` gotcha #5); SDF is fine
   here precisely because no joint is authored.
 
-## Cameras
+## 📷 Camera Interfaces
 
 Three cameras are **baked into `robot/vega_1u_gripper.usda`** (and
 therefore into `scene_init.usd`) as Camera prims on the robot
@@ -231,7 +232,7 @@ Relocating a camera is done by editing the prim's `xformOp:translate` /
 `xformOp:orient` in `robot/vega_1u_gripper.usda` (or `scene_init.usd`)
 — there are no Python-side overrides anymore.
 
-## Git LFS
+## 📦 Git LFS
 
 This repository contains large simulation assets. Before adding USD, USDC,
 OBJ, or MP4 files to Git, install Git LFS and configure the repository from
@@ -245,7 +246,7 @@ The script tracks `*.usd`, `*.usdc`, `*.obj`, and `*.mp4` through Git LFS.
 Commit the generated `.gitattributes` file before staging matching assets, so
 large files are stored as LFS objects instead of ordinary Git blobs.
 
-## Environment setup
+## ⚙️ Environment Setup
 
 The Python environment is managed with [`uv`](https://docs.astral.sh/uv/).
 Isaac Sim ships as pip packages, so no separate Omniverse-launcher
@@ -293,7 +294,7 @@ export UV_CACHE_DIR=/path/to/big-disk/.uv-cache
 uv sync
 ```
 
-## Running
+## 🚀 Running the Harness
 
 With the env synced (see [Environment setup](#environment-setup)) and the
 EULA accepted, launch the harness with `uv run` from the repo root — the
