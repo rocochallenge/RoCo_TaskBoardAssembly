@@ -1,0 +1,1059 @@
+#usda 1.0
+(
+    customLayerData = {
+        dictionary cameraSettings = {
+            dictionary Front = {
+                double3 position = (5, 0, 0)
+                double radius = 5
+            }
+            dictionary Perspective = {
+                double3 position = (2.5794811499078727, 0.7415944220372388, 2.845255830795508)
+                double3 target = (-0.13833892146591875, -0.28641644687046375, 0.430832482288952)
+            }
+            dictionary Right = {
+                double3 position = (0, -5, 0)
+                double radius = 5
+            }
+            dictionary Top = {
+                double3 position = (0, 0, 5)
+                double radius = 5
+            }
+            string boundCamera = "/OmniverseKit_Persp"
+        }
+        dictionary omni_layer = {
+            string authoring_layer = "./vega_1u_gripper_cam.usda"
+            dictionary locked = {
+            }
+            dictionary muteness = {
+            }
+        }
+        dictionary renderSettings = {
+        }
+    }
+    defaultPrim = "vega_1u"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "vega_1u" (
+    variants = {
+        string Physics = "PhysX"
+        string Robot = "Robot"
+        string Sensor = "Sensors"
+    }
+    prepend variantSets = ["Physics", "Sensor", "Robot"]
+)
+{
+    string isaac:namespace (
+        displayName = "Namespace"
+        doc = "Namespace of the prim in Isaac Sim"
+    )
+    rel isaac:physics:robotJoints = [
+        </vega_1u/joints/Lift>,
+        </vega_1u/joints/torso_flip>,
+        </vega_1u/joints/arm_center_j0>,
+        </vega_1u/joints/L_arm_j1>,
+        </vega_1u/joints/L_arm_j2>,
+        </vega_1u/joints/L_arm_j3>,
+        </vega_1u/joints/L_arm_j4>,
+        </vega_1u/joints/L_arm_j5>,
+        </vega_1u/joints/L_arm_j6>,
+        </vega_1u/joints/L_arm_j7>,
+        </vega_1u/joints/L_arm_j8>,
+        </vega_1u/joints/L_ee_j0>,
+        </vega_1u/joints/R_arm_j1>,
+        </vega_1u/joints/R_arm_j2>,
+        </vega_1u/joints/R_arm_j3>,
+        </vega_1u/joints/R_arm_j4>,
+        </vega_1u/joints/R_arm_j5>,
+        </vega_1u/joints/R_arm_j6>,
+        </vega_1u/joints/R_arm_j7>,
+        </vega_1u/joints/R_arm_j8>,
+        </vega_1u/joints/R_ee_j0>,
+        </vega_1u/joints/head_j1>,
+        </vega_1u/joints/head_j2>,
+        </vega_1u/joints/head_j3>,
+        </vega_1u/joints/zed_left_camera_mount>,
+        </vega_1u/joints/zed_left_depth_mount>,
+        </vega_1u/joints/zed_right_camera_mount>,
+        </vega_1u/L_ee_link>,
+        </vega_1u/R_ee_link>,
+    ]
+    rel isaac:physics:robotLinks = [
+        </vega_1u/base_link>,
+        </vega_1u/lift_link>,
+        </vega_1u/torso_flip_link>,
+        </vega_1u/arm_center>,
+        </vega_1u/L_arm_l1>,
+        </vega_1u/L_arm_l2>,
+        </vega_1u/L_arm_l3>,
+        </vega_1u/L_arm_l4>,
+        </vega_1u/L_arm_l5>,
+        </vega_1u/L_arm_l6>,
+        </vega_1u/L_arm_l7>,
+        </vega_1u/L_arm_l8>,
+        </vega_1u/L_ee>,
+        </vega_1u/R_arm_l1>,
+        </vega_1u/R_arm_l2>,
+        </vega_1u/R_arm_l3>,
+        </vega_1u/R_arm_l4>,
+        </vega_1u/R_arm_l5>,
+        </vega_1u/R_arm_l6>,
+        </vega_1u/R_arm_l7>,
+        </vega_1u/R_arm_l8>,
+        </vega_1u/R_ee>,
+        </vega_1u/head_l1>,
+        </vega_1u/head_l2>,
+        </vega_1u/head_l3>,
+        </vega_1u/zed_left_camera>,
+        </vega_1u/zed_depth_frame>,
+        </vega_1u/zed_right_camera>,
+        </vega_1u/R_ee_link>,
+        </vega_1u/L_ee_link>,
+    ]
+    token isaac:robotType = "Humanoid"
+
+    def "R_ee_link" (
+        prepend payload = @./gripper.usdc@
+    )
+    {
+        string isaac:namespace (
+            displayName = "Namespace"
+            doc = "Namespace of the prim in Isaac Sim"
+        )
+        quatf xformOp:orient = (0.5, 0.5, 0.5, 0.5)
+        float3 xformOp:scale = (1, 1, 1)
+        double3 xformOp:translate = (0.79172, -0.22946, 1.07812)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        over "gripper_link" (
+            delete apiSchemas = ["PhysicsArticulationRootAPI", "PhysxArticulationAPI"]
+        )
+        {
+            string isaac:nameOverride (
+                displayName = "Name Override"
+                doc = "Name override for prim lookup in base name search"
+            )
+            vector3f physics:angularVelocity = (0, 0, 0)
+            rel physics:simulationOwner
+            vector3f physics:velocity = (0, 0, 0)
+            quatf xformOp:orient = (0.9763826, 0.1285434, -0.17216243, -0.022665672)
+            float3 xformOp:translate = (-0.24911699, -0.18826026, -0.06283936)
+
+            over "gripper_link" (
+                prepend apiSchemas = ["PhysxConvexDecompositionCollisionAPI"]
+            )
+            {
+                uniform token physics:approximation = "convexDecomposition"
+                rel physics:simulationOwner
+            }
+
+            def Camera "R_wristcam"
+            {
+                float2 clippingRange = (0.01, 10000000)
+                float focalLength = 18.147562
+                float focusDistance = 400
+                token visibility = "invisible"
+                quatd xformOp:orient = (6.123233995736766e-17, 6.123233995736766e-17, 1, 6.123233995736766e-17)
+                double3 xformOp:scale = (1, 1, 1)
+                double3 xformOp:translate = (0, 0, 0.1)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+            }
+        }
+
+        over "joints"
+        {
+            def PhysicsFixedJoint "R_ee_fixed"
+            {
+                rel physics:body0 = </vega_1u/R_ee>
+                rel physics:body1 = </vega_1u/R_ee_link/gripper_link>
+                float physics:breakForce = 3.4028235e38
+                float physics:breakTorque = 3.4028235e38
+                point3f physics:localPos0 = (1.4901235e-7, -1.19207996e-7, -5.9605384e-8)
+                point3f physics:localPos1 = (0, 0, 0)
+                quatf physics:localRot0 = (1, 0.0000030994447, 3.0791203e-12, 0.0000030994447)
+                quatf physics:localRot1 = (1, 0, 0, 0)
+            }
+
+            over "R_gripper_joint_01"
+            {
+                rel physxMimicJoint:rotX:referenceJoint = </vega_1u/R_ee_link/joints/R_gripper_joint>
+            }
+
+            over "R_gripper_joint"
+            {
+                float drive:angular:physics:targetPosition = 10
+                float physics:lowerLimit = 0
+                float physics:upperLimit = 38.1
+            }
+        }
+
+        over "gripper_active_link"
+        {
+            vector3f physics:angularVelocity = (0, 0, 0)
+            rel physics:simulationOwner
+            vector3f physics:velocity = (0, 0, 0)
+            quatf xformOp:orient = (0.79033464, -0.6064446, -0.053057037, -0.069145285)
+            double3 xformOp:translate = (-0.25619056820869446, -0.2221301794052124, 0.016311559826135635)
+
+            over "gripper_active_link" (
+                prepend apiSchemas = ["PhysxConvexDecompositionCollisionAPI"]
+            )
+            {
+                uniform token physics:approximation = "convexDecomposition"
+                rel physics:simulationOwner
+            }
+        }
+
+        over "gripper_passive_link"
+        {
+            vector3f physics:angularVelocity = (0, 0, 0)
+            rel physics:simulationOwner
+            vector3f physics:velocity = (0, 0, 0)
+            quatf xformOp:orient = (0.7663207, -0.58801824, -0.15755889, -0.20533478)
+            double3 xformOp:translate = (-0.2984766960144043, -0.2181515097618103, 0.001443776418454945)
+
+            over "left_gripper_passive_link" (
+                prepend apiSchemas = ["PhysxConvexDecompositionCollisionAPI"]
+            )
+            {
+                uniform token physics:approximation = "convexDecomposition"
+                rel physics:simulationOwner
+            }
+        }
+    }
+
+    def "L_ee_link" (
+        prepend payload = @./gripper1.usdc@
+    )
+    {
+        string isaac:namespace (
+            displayName = "Namespace"
+            doc = "Namespace of the prim in Isaac Sim"
+        )
+        quatf xformOp:orient = (0.5, 0.5, 0.5, 0.5)
+        float3 xformOp:scale = (1, 1, 1)
+        double3 xformOp:translate = (0.79172, 0.22926, 1.07812)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        over "gripper_link" (
+            delete apiSchemas = ["PhysicsArticulationRootAPI", "PhysxArticulationAPI"]
+        )
+        {
+            string isaac:nameOverride (
+                displayName = "Name Override"
+                doc = "Name override for prim lookup in base name search"
+            )
+            vector3f physics:angularVelocity = (0, 0, 0)
+            rel physics:simulationOwner
+            vector3f physics:velocity = (0, 0, 0)
+            quatf xformOp:orient = (0.96807563, 0.15755934, -0.17761858, -0.08035083)
+            float3 xformOp:translate = (0.06069207, 0.07088827, -0.049864497)
+
+            over "gripper_link" (
+                prepend apiSchemas = ["PhysxConvexDecompositionCollisionAPI"]
+            )
+            {
+                uniform token physics:approximation = "convexDecomposition"
+                rel physics:simulationOwner
+            }
+
+            def Camera "L_wristcam"
+            {
+                float2 clippingRange = (0.01, 10000000)
+                float focalLength = 18.147562
+                float focusDistance = 400
+                token visibility = "invisible"
+                quatd xformOp:orient = (6.123233995736766e-17, -6.123233995736766e-17, -1, -6.123233995736766e-17)
+                double3 xformOp:scale = (1, 1, 1)
+                double3 xformOp:translate = (0, 0, 0.1)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+            }
+        }
+
+        over "joints"
+        {
+            def PhysicsFixedJoint "L_ee_fixed"
+            {
+                rel physics:body0 = </vega_1u/L_ee>
+                rel physics:body1 = </vega_1u/L_ee_link/gripper_link>
+                float physics:breakForce = 3.4028235e38
+                float physics:breakTorque = 3.4028235e38
+                point3f physics:localPos0 = (-1.4901087e-7, 1.1920984e-7, -5.9605384e-8)
+                point3f physics:localPos1 = (0, 0, 0)
+                quatf physics:localRot0 = (0.0000030994447, 3.0791064e-12, 0.0000030994447, 1)
+                quatf physics:localRot1 = (1, 0, 0, 0)
+            }
+
+            over "L_gripper_joint_01"
+            {
+                rel physxMimicJoint:rotX:referenceJoint = </vega_1u/L_ee_link/joints/L_gripper_joint>
+            }
+
+            over "L_gripper_joint"
+            {
+                float drive:angular:physics:targetPosition = 10
+                float physics:lowerLimit = 0
+                float physics:upperLimit = 38.1
+            }
+        }
+
+        over "gripper_active_link"
+        {
+            string isaac:nameOverride (
+                displayName = "Name Override"
+                doc = "Name override for prim lookup in base name search"
+            )
+            vector3f physics:angularVelocity = (0, 0, 0)
+            rel physics:simulationOwner
+            vector3f physics:velocity = (0, 0, 0)
+            quatf xformOp:orient = (0.80881375, -0.5769349, -0.018566249, -0.11234665)
+            double3 xformOp:translate = (0.04980340227484703, 0.031851284205913544, 0.02642187848687172)
+
+            over "gripper_active_link" (
+                prepend apiSchemas = ["PhysxConvexDecompositionCollisionAPI"]
+            )
+            {
+                uniform token physics:approximation = "convexDecomposition"
+                rel physics:simulationOwner
+            }
+        }
+
+        over "gripper_passive_link"
+        {
+            vector3f physics:angularVelocity = (0, 0, 0)
+            rel physics:simulationOwner
+            vector3f physics:velocity = (0, 0, 0)
+            quatf xformOp:orient = (0.77701724, -0.5649461, -0.11846776, -0.25108868)
+            double3 xformOp:translate = (0.008223366923630238, 0.04136597365140915, 0.012084278278052807)
+
+            over "left_gripper_passive_link" (
+                prepend apiSchemas = ["PhysxConvexDecompositionCollisionAPI"]
+            )
+            {
+                uniform token physics:approximation = "convexDecomposition"
+                rel physics:simulationOwner
+            }
+        }
+    }
+
+    over "R_ee"
+    {
+        string isaac:nameOverride (
+            displayName = "Name Override"
+            doc = "Name override for prim lookup in base name search"
+        )
+        vector3f physics:angularVelocity = (0, 0, 0)
+        rel physics:simulationOwner
+        vector3f physics:velocity = (0, 0, 0)
+        quatd xformOp:orient = (0.5213367119384276, 0.6272082545299797, 0.47771547893627475, 0.32650537425802156)
+        double3 xformOp:translate = (0.7288807034492493, -0.4785771667957306, 0.8898598551750183)
+    }
+
+    over "L_ee"
+    {
+        string isaac:nameOverride (
+            displayName = "Name Override"
+            doc = "Name override for prim lookup in base name search"
+        )
+        vector3f physics:angularVelocity = (0, 0, 0)
+        rel physics:simulationOwner
+        vector3f physics:velocity = (0, 0, 0)
+        quatd xformOp:orient = (0.27627675466262447, -0.514180908198704, 0.6114513391363546, -0.5342437723973981)
+        double3 xformOp:translate = (0.7418555617332458, 0.2899519205093384, 1.1490083932876587)
+    }
+
+    over "base_link"
+    {
+        string isaac:nameOverride = "base_link" (
+            displayName = "Name Override"
+            doc = "Name override for prim lookup in base name search"
+        )
+        vector3f physics:angularVelocity = (0, 0, 0)
+        rel physics:simulationOwner
+        vector3f physics:velocity = (0, 0, 0)
+        quatd xformOp:orient = (1, 0, 0, 0)
+        double3 xformOp:translate = (0, 0, 0)
+    }
+
+    over "lift_link"
+    {
+        string isaac:nameOverride = "lift_link"
+        vector3f physics:angularVelocity = (0, 0, 0)
+        rel physics:simulationOwner
+        vector3f physics:velocity = (0, 0, 0)
+        quatd xformOp:orient = (0.7071089986533301, -1.1482614858944385e-9, -7.142740621188371e-9, 0.707104563712811)
+        double3 xformOp:translate = (-2.3283064365386963e-10, -2.493948159099091e-8, 0.009999990463256836)
+    }
+
+    over "torso_flip_link"
+    {
+        vector3f physics:angularVelocity = (0, 0, 0)
+        rel physics:simulationOwner
+        vector3f physics:velocity = (0, 0, 0)
+        quatd xformOp:orient = (0.7071089986531433, -1.1981455827479835e-9, -7.1946715252117e-9, 0.7071045637129979)
+        double3 xformOp:translate = (0.06186998635530472, -4.054527380503714e-7, 0.7959998250007629)
+    }
+
+    over "arm_center"
+    {
+        vector3f physics:angularVelocity = (0, 0, 0)
+        rel physics:simulationOwner
+        vector3f physics:velocity = (0, 0, 0)
+        quatd xformOp:orient = (0.9999999999999986, 4.292879356554475e-9, -6.074898300056636e-9, 5.3209460263184795e-8)
+        double3 xformOp:translate = (0.02334998920559883, -1.7791171558201313e-7, 1.0558197498321533)
+    }
+
+    over "L_arm_l1"
+    {
+        string isaac:nameOverride = "L_arm_l1"
+        vector3f physics:angularVelocity = (0, 0, 0)
+        rel physics:simulationOwner
+        vector3f physics:velocity = (0, 0, 0)
+        quatd xformOp:orient = (0.9914448439878378, -1.4901161779886343e-8, -0.13052632427954636, 4.8894437090252053e-8)
+        double3 xformOp:translate = (0.023349963128566742, 0.16945981979370117, 1.0558197498321533)
+    }
+
+    over "L_arm_l2"
+    {
+        vector3f physics:angularVelocity = (0, 0, 0)
+        rel physics:simulationOwner
+        vector3f physics:velocity = (0, 0, 0)
+        quatd xformOp:orient = (0.9876721036735812, -0.01137611163094627, -0.13002960227026159, 0.0864100818342431)
+        double3 xformOp:translate = (0.050236597657203674, 0.22945983707904816, 1.1100255250930786)
+    }
+
+    over "L_arm_l3"
+    {
+        vector3f physics:angularVelocity = (0, 0, 0)
+        rel physics:simulationOwner
+        vector3f physics:velocity = (0, 0, 0)
+        quatd xformOp:orient = (0.9876720875276109, -0.01137611211298925, -0.13002970783208864, 0.08641010747097597)
+        double3 xformOp:translate = (0.21775150299072266, 0.25800761580467224, 1.1103941202163696)
+    }
+
+    over "L_arm_l4"
+    {
+        vector3f physics:angularVelocity = (0, 0, 0)
+        rel physics:simulationOwner
+        vector3f physics:velocity = (0, 0, 0)
+        quatd xformOp:orient = (0.992403837521285, -0.015134393554212902, -0.08682456583497011, 0.08583162687693884)
+        double3 xformOp:translate = (0.3024509847164154, 0.3202720284461975, 1.1952059268951416)
+    }
+
+    over "L_arm_l5"
+    {
+        vector3f physics:angularVelocity = (0, 0, 0)
+        rel physics:simulationOwner
+        vector3f physics:velocity = (0, 0, 0)
+        quatd xformOp:orient = (0.9924038390066867, -0.015134395471286019, -0.08682456080430946, 0.08583161445322883)
+        double3 xformOp:translate = (0.5047503113746643, 0.3104509115219116, 1.1906720399856567)
+    }
+
+    over "L_arm_l6"
+    {
+        string isaac:nameOverride = "L_arm_l6"
+        vector3f physics:angularVelocity = (0, 0, 0)
+        rel physics:simulationOwner
+        vector3f physics:velocity = (0, 0, 0)
+        quatd xformOp:orient = (0.9810603439115442, -0.036833527979426274, 0.1729869400312674, 0.07898994492573201)
+        double3 xformOp:translate = (0.5733280181884766, 0.35504791140556335, 1.2021719217300415)
+    }
+
+    over "L_arm_l7"
+    {
+        vector3f physics:angularVelocity = (0, 0, 0)
+        rel physics:simulationOwner
+        vector3f physics:velocity = (0, 0, 0)
+        quatd xformOp:orient = (0.9680756453177792, -0.08035076691271702, 0.15755940065149307, -0.1776185082288606)
+        double3 xformOp:translate = (0.6496360301971436, 0.33595719933509827, 1.2110737562179565)
+    }
+
+    over "L_arm_l8"
+    {
+        vector3f physics:angularVelocity = (0, 0, 0)
+        rel physics:simulationOwner
+        vector3f physics:velocity = (0, 0, 0)
+        quatd xformOp:orient = (0.5731240216715651, 0.06877809920715203, 0.7959423843802118, -0.1824120324967783)
+        double3 xformOp:translate = (0.7418555617332458, 0.2899519205093384, 1.1490083932876587)
+    }
+
+    over "R_arm_l1"
+    {
+        string isaac:nameOverride = "R_arm_l1"
+        vector3f physics:angularVelocity = (0, 0, 0)
+        rel physics:simulationOwner
+        vector3f physics:velocity = (0, 0, 0)
+        quatd xformOp:orient = (0.9914448659224955, -3.818422627184725e-8, 0.13052615766932588, 7.613562189569544e-8)
+        double3 xformOp:translate = (0.023350004106760025, -0.16946011781692505, 1.0558197498321533)
+    }
+
+    over "R_arm_l2"
+    {
+        vector3f physics:angularVelocity = (0, 0, 0)
+        rel physics:simulationOwner
+        vector3f physics:velocity = (0, 0, 0)
+        quatd xformOp:orient = (0.9763826105786008, -0.022665679504919618, 0.12854321329405646, -0.1721624437800981)
+        double3 xformOp:translate = (0.07373740524053574, -0.22946013510227203, 1.0893200635910034)
+    }
+
+    over "R_arm_l3"
+    {
+        vector3f physics:angularVelocity = (0, 0, 0)
+        rel physics:simulationOwner
+        vector3f physics:velocity = (0, 0, 0)
+        quatd xformOp:orient = (0.9763826209295378, -0.02266567558037612, 0.12854319726287647, -0.17216239756314075)
+        double3 xformOp:translate = (0.21182972192764282, -0.28568822145462036, 1.0078014135360718)
+    }
+
+    over "R_arm_l4"
+    {
+        vector3f physics:angularVelocity = (0, 0, 0)
+        rel physics:simulationOwner
+        vector3f physics:velocity = (0, 0, 0)
+        quatd xformOp:orient = (0.9763826050111263, -0.02266568333738254, 0.1285432139018614, -0.1721624743964752)
+        double3 xformOp:translate = (0.3442307710647583, -0.283647745847702, 1.0344412326812744)
+    }
+
+    over "R_arm_l5"
+    {
+        vector3f physics:angularVelocity = (0, 0, 0)
+        rel physics:simulationOwner
+        vector3f physics:velocity = (0, 0, 0)
+        quatd xformOp:orient = (0.9763826056599285, -0.022665685187538406, 0.1285432287321926, -0.1721624594004487)
+        double3 xformOp:translate = (0.49544721841812134, -0.3907138705253601, 0.9525117874145508)
+    }
+
+    over "R_arm_l6"
+    {
+        string isaac:nameOverride = "R_arm_l6"
+        vector3f physics:angularVelocity = (0, 0, 0)
+        rel physics:simulationOwner
+        vector3f physics:velocity = (0, 0, 0)
+        quatd xformOp:orient = (0.9763826026599629, -0.022665685960555956, 0.12854322255262032, -0.17216248092625167)
+        double3 xformOp:translate = (0.5540732741355896, -0.44675201177597046, 0.9368029832839966)
+    }
+
+    over "R_arm_l7"
+    {
+        vector3f physics:angularVelocity = (0, 0, 0)
+        rel physics:simulationOwner
+        vector3f physics:velocity = (0, 0, 0)
+        quatd xformOp:orient = (0.9763825950485562, -0.02266568123440767, 0.12854329138228235, -0.1721624733240001)
+        double3 xformOp:translate = (0.6319000720977783, -0.43891310691833496, 0.948974609375)
+    }
+
+    over "R_arm_l8"
+    {
+        vector3f physics:angularVelocity = (0, 0, 0)
+        rel physics:simulationOwner
+        vector3f physics:velocity = (0, 0, 0)
+        quatd xformOp:orient = (0.5995152381561856, 0.10570981923164013, 0.7812988032391602, -0.13776463041580075)
+        double3 xformOp:translate = (0.7288807034492493, -0.4785771667957306, 0.8898598551750183)
+    }
+
+    over "head_l1"
+    {
+        string isaac:nameOverride = "head_l1"
+        vector3f physics:angularVelocity = (0, 0, 0)
+        rel physics:simulationOwner
+        vector3f physics:velocity = (0, 0, 0)
+        quatd xformOp:orient = (0.9999999999999974, 4.476176812186295e-9, -6.233562569450224e-9, 7.105021078163323e-8)
+        double3 xformOp:translate = (-0.050149980932474136, -0.07250016182661057, 1.0698198080062866)
+    }
+
+    over "head_l2"
+    {
+        string isaac:nameOverride = "head_l2"
+        vector3f physics:angularVelocity = (0, 0, 0)
+        rel physics:simulationOwner
+        vector3f physics:velocity = (0, 0, 0)
+        quatd xformOp:orient = (0.9999999999999959, -5.935750718052344e-11, -6.840545817884629e-8, 5.946713504327073e-8)
+        double3 xformOp:translate = (-0.05014998838305473, -1.5087425708770752e-7, 1.0663197040557861)
+    }
+
+    over "head_l3"
+    {
+        string isaac:nameOverride = "head_l3"
+        vector3f physics:angularVelocity = (0, 0, 0)
+        rel physics:simulationOwner
+        vector3f physics:velocity = (0, 0, 0)
+        quatd xformOp:orient = (0.9999999999999984, 3.055899265734722e-8, -4.6060770167330397e-8, 7.292317074222713e-9)
+        double3 xformOp:translate = (-0.05014999583363533, 0.0019998459611088037, 1.1158196926116943)
+    }
+
+    over "zed_left_camera"
+    {
+        vector3f physics:angularVelocity = (0, 0, 0)
+        rel physics:simulationOwner
+        vector3f physics:velocity = (0, 0, 0)
+        quatd xformOp:orient = (0.500003192561903, -0.5000000186237661, 0.4999968595774755, -0.49999992921679554)
+        double3 xformOp:translate = (-0.013650014996528625, 0.024999842047691345, 1.1647197008132935)
+    }
+
+    over "zed_depth_frame"
+    {
+        string isaac:nameOverride (
+            displayName = "Name Override"
+            doc = "Name override for prim lookup in base name search"
+        )
+        vector3f physics:angularVelocity = (0, 0, 0)
+        rel physics:simulationOwner
+        vector3f physics:velocity = (0, 0, 0)
+        quatd xformOp:orient = (0.500003192561903, -0.5000000186237661, 0.4999968595774755, -0.49999992921679554)
+        double3 xformOp:translate = (-0.025150006636977196, 0.024999840185046196, 1.1647197008132935)
+
+        def Camera "headcam"
+        {
+            float2 clippingRange = (0.01, 10000000)
+            float focalLength = 2.12
+            float focusDistance = 100
+            token visibility = "invisible"
+            quatd xformOp:orient = (6.123233995736766e-17, 1, 0, 0)
+            double3 xformOp:scale = (1, 1, 1)
+            double3 xformOp:translate = (0, -0.1, 0.05)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+        }
+    }
+
+    over "zed_right_camera"
+    {
+        vector3f physics:angularVelocity = (0, 0, 0)
+        rel physics:simulationOwner
+        vector3f physics:velocity = (0, 0, 0)
+        quatd xformOp:orient = (0.500003192561903, -0.5000000186237661, 0.4999968595774755, -0.49999992921679554)
+        double3 xformOp:translate = (-0.013650013133883476, -0.025000138208270073, 1.164719581604004)
+    }
+
+    over "joints"
+    {
+        over "Lift"
+        {
+            float drive:linear:physics:damping = 1000
+            float drive:linear:physics:maxForce = inf
+            float drive:linear:physics:stiffness = 100000
+            string isaac:nameOverride (
+                displayName = "Name Override"
+                doc = "Name override for prim lookup in base name search"
+            )
+            float physics:lowerLimit = 0
+            float physics:upperLimit = 0.4
+            float state:linear:physics:position = 3.489018e-8
+            float state:linear:physics:velocity = 0
+        }
+
+        over "torso_flip"
+        {
+            float drive:angular:physics:damping = 1000
+            float drive:angular:physics:maxForce = inf
+            float drive:angular:physics:stiffness = 100000
+            string isaac:nameOverride (
+                displayName = "Name Override"
+                doc = "Name override for prim lookup in base name search"
+            )
+            float physics:lowerLimit = 0
+            float physics:upperLimit = 57.295776
+            float state:angular:physics:position = -8.380191e-9
+            float state:angular:physics:velocity = 0
+        }
+
+        over "L_arm_j1"
+        {
+            float drive:angular:physics:damping = 1000
+            float drive:angular:physics:maxForce = inf
+            float drive:angular:physics:stiffness = 100000
+            float drive:angular:physics:targetPosition = -15
+            string isaac:nameOverride (
+                displayName = "Name Override"
+                doc = "Name override for prim lookup in base name search"
+            )
+            float physics:lowerLimit = -175.95534
+            float physics:upperLimit = 175.95534
+            float state:angular:physics:position = -15.000021
+            float state:angular:physics:velocity = 0
+        }
+
+        over "R_arm_j1"
+        {
+            float drive:angular:physics:damping = 1000
+            float drive:angular:physics:maxForce = inf
+            float drive:angular:physics:stiffness = 100000
+            float drive:angular:physics:targetPosition = -15
+            string isaac:nameOverride (
+                displayName = "Name Override"
+                doc = "Name override for prim lookup in base name search"
+            )
+            float physics:lowerLimit = -175.95534
+            float physics:upperLimit = 175.95534
+            float state:angular:physics:position = -15.000004
+            float state:angular:physics:velocity = 0
+        }
+
+        over "head_j1"
+        {
+            float drive:angular:physics:damping = 1000
+            float drive:angular:physics:maxForce = inf
+            float drive:angular:physics:stiffness = 100000
+            string isaac:nameOverride (
+                displayName = "Name Override"
+                doc = "Name override for prim lookup in base name search"
+            )
+            float physics:lowerLimit = -84.969635
+            float physics:upperLimit = 84.969635
+            float state:angular:physics:position = 7.140585e-7
+            float state:angular:physics:velocity = 0
+        }
+
+        over "L_arm_j2"
+        {
+            float drive:angular:physics:damping = 1000
+            float drive:angular:physics:maxForce = inf
+            float drive:angular:physics:stiffness = 100000
+            float drive:angular:physics:targetPosition = 10
+            string isaac:nameOverride (
+                displayName = "Name Override"
+                doc = "Name override for prim lookup in base name search"
+            )
+            float physics:lowerLimit = -25.954987
+            float physics:upperLimit = 88.98034
+            float state:angular:physics:position = 10.000003
+            float state:angular:physics:velocity = 0
+        }
+
+        over "R_arm_j2"
+        {
+            float drive:angular:physics:damping = 1000
+            float drive:angular:physics:maxForce = inf
+            float drive:angular:physics:stiffness = 100000
+            float drive:angular:physics:targetPosition = -20
+            string isaac:nameOverride (
+                displayName = "Name Override"
+                doc = "Name override for prim lookup in base name search"
+            )
+            float physics:lowerLimit = -88.98034
+            float physics:upperLimit = 25.954987
+            float state:angular:physics:position = -19.99999
+            float state:angular:physics:velocity = 0
+        }
+
+        over "head_j2"
+        {
+            float drive:angular:physics:damping = 1000
+            float drive:angular:physics:maxForce = inf
+            float drive:angular:physics:stiffness = 100000
+            string isaac:nameOverride (
+                displayName = "Name Override"
+                doc = "Name override for prim lookup in base name search"
+            )
+            float physics:lowerLimit = -159.96982
+            float physics:upperLimit = 159.96982
+            float state:angular:physics:position = -1.3177342e-7
+            float state:angular:physics:velocity = 0
+        }
+
+        over "L_arm_j3"
+        {
+            float drive:angular:physics:damping = 1000
+            float drive:angular:physics:maxForce = inf
+            float drive:angular:physics:stiffness = 100000
+            string isaac:nameOverride (
+                displayName = "Name Override"
+                doc = "Name override for prim lookup in base name search"
+            )
+            float physics:lowerLimit = -175.95534
+            float physics:upperLimit = 175.95534
+            float state:angular:physics:position = -0.0000094693505
+            float state:angular:physics:velocity = 0
+        }
+
+        over "R_arm_j3"
+        {
+            float drive:angular:physics:damping = 1000
+            float drive:angular:physics:maxForce = inf
+            float drive:angular:physics:stiffness = 100000
+            float drive:angular:physics:targetPosition = 0
+            string isaac:nameOverride (
+                displayName = "Name Override"
+                doc = "Name override for prim lookup in base name search"
+            )
+            float physics:lowerLimit = -175.95534
+            float physics:upperLimit = 175.95534
+            float state:angular:physics:position = -2.007377e-7
+            float state:angular:physics:velocity = 0
+        }
+
+        over "head_j3"
+        {
+            float drive:angular:physics:damping = 1000
+            float drive:angular:physics:maxForce = inf
+            float drive:angular:physics:stiffness = 100000
+            string isaac:nameOverride (
+                displayName = "Name Override"
+                doc = "Name override for prim lookup in base name search"
+            )
+            float physics:lowerLimit = -78.95358
+            float physics:upperLimit = 84.969635
+            float state:angular:physics:position = 3.9288743e-8
+            float state:angular:physics:velocity = 0
+        }
+
+        over "L_arm_j4"
+        {
+            float drive:angular:physics:damping = 1000
+            float drive:angular:physics:maxForce = inf
+            float drive:angular:physics:stiffness = 100000
+            float drive:angular:physics:targetPosition = 5
+            string isaac:nameOverride (
+                displayName = "Name Override"
+                doc = "Name override for prim lookup in base name search"
+            )
+            float physics:lowerLimit = -175.95534
+            float physics:upperLimit = 13.980169
+            float state:angular:physics:position = 4.999995
+            float state:angular:physics:velocity = 0
+        }
+
+        over "R_arm_j4"
+        {
+            float drive:angular:physics:damping = 1000
+            float drive:angular:physics:maxForce = inf
+            float drive:angular:physics:stiffness = 100000
+            float drive:angular:physics:targetPosition = 0
+            string isaac:nameOverride (
+                displayName = "Name Override"
+                doc = "Name override for prim lookup in base name search"
+            )
+            float physics:lowerLimit = -175.95534
+            float physics:upperLimit = 13.980169
+            float state:angular:physics:position = -4.254071e-7
+            float state:angular:physics:velocity = 0
+        }
+
+        over "L_arm_j5"
+        {
+            float drive:angular:physics:damping = 1000
+            float drive:angular:physics:maxForce = inf
+            float drive:angular:physics:stiffness = 100000
+            float drive:angular:physics:targetPosition = 0
+            string isaac:nameOverride (
+                displayName = "Name Override"
+                doc = "Name override for prim lookup in base name search"
+            )
+            float physics:lowerLimit = -175.95534
+            float physics:upperLimit = 175.95534
+            float state:angular:physics:position = -0.000018543255
+            float state:angular:physics:velocity = 0
+        }
+
+        over "R_arm_j5"
+        {
+            float drive:angular:physics:damping = 1000
+            float drive:angular:physics:maxForce = inf
+            float drive:angular:physics:stiffness = 100000
+            float drive:angular:physics:targetPosition = 0
+            string isaac:nameOverride (
+                displayName = "Name Override"
+                doc = "Name override for prim lookup in base name search"
+            )
+            float physics:lowerLimit = -175.95534
+            float physics:upperLimit = 175.95534
+            float state:angular:physics:position = 6.547955e-7
+            float state:angular:physics:velocity = 0
+        }
+
+        over "L_arm_j6"
+        {
+            float drive:angular:physics:damping = 1000
+            float drive:angular:physics:maxForce = inf
+            float drive:angular:physics:stiffness = 100000
+            float drive:angular:physics:targetPosition = 30
+            string isaac:nameOverride (
+                displayName = "Name Override"
+                doc = "Name override for prim lookup in base name search"
+            )
+            float physics:lowerLimit = -79.98491
+            float physics:upperLimit = 79.98491
+            float state:angular:physics:position = 30.00002
+            float state:angular:physics:velocity = 0
+        }
+
+        over "R_arm_j6"
+        {
+            float drive:angular:physics:damping = 1000
+            float drive:angular:physics:maxForce = inf
+            float drive:angular:physics:stiffness = 100000
+            float drive:angular:physics:targetPosition = 0
+            string isaac:nameOverride (
+                displayName = "Name Override"
+                doc = "Name override for prim lookup in base name search"
+            )
+            float physics:lowerLimit = -79.98491
+            float physics:upperLimit = 79.98491
+            float state:angular:physics:position = -5.734563e-7
+            float state:angular:physics:velocity = 0
+        }
+
+        over "L_arm_j7"
+        {
+            float drive:angular:physics:damping = 1000
+            float drive:angular:physics:maxForce = inf
+            float drive:angular:physics:stiffness = 100000
+            float drive:angular:physics:targetPosition = -30
+            string isaac:nameOverride (
+                displayName = "Name Override"
+                doc = "Name override for prim lookup in base name search"
+            )
+            float physics:lowerLimit = -78.95358
+            float physics:upperLimit = 63.999382
+            float state:angular:physics:position = -29.999998
+            float state:angular:physics:velocity = 0
+        }
+
+        over "R_arm_j7"
+        {
+            float drive:angular:physics:damping = 1000
+            float drive:angular:physics:maxForce = inf
+            float drive:angular:physics:stiffness = 100000
+            float drive:angular:physics:targetPosition = 0
+            string isaac:nameOverride (
+                displayName = "Name Override"
+                doc = "Name override for prim lookup in base name search"
+            )
+            float physics:lowerLimit = -63.999382
+            float physics:upperLimit = 78.95358
+            float state:angular:physics:position = -1.5582413e-7
+            float state:angular:physics:velocity = 0
+        }
+
+        over "arm_center_j0"
+        {
+            string isaac:nameOverride (
+                displayName = "Name Override"
+                doc = "Name override for prim lookup in base name search"
+            )
+        }
+
+        over "L_arm_j8"
+        {
+            string isaac:nameOverride (
+                displayName = "Name Override"
+                doc = "Name override for prim lookup in base name search"
+            )
+        }
+
+        over "L_ee_j0"
+        {
+            string isaac:nameOverride (
+                displayName = "Name Override"
+                doc = "Name override for prim lookup in base name search"
+            )
+        }
+    }
+
+    over "root_joint"
+    {
+        bool physxArticulation:enabledSelfCollisions = 0
+    }
+    variantSet "Physics" = {
+        "None" (
+            prepend references = @./configuration/vega_1u_base.usd@
+        ) {
+            over "joints" (
+                active = false
+            )
+            {
+            }
+
+        }
+        "PhysX" (
+            prepend payload = @./configuration/vega_1u_physics.usd@
+        ) {
+
+        }
+    }
+    variantSet "Sensor" = {
+        "None" {
+
+        }
+        "Sensors" (
+            prepend payload = @./configuration/vega_1u_sensor.usd@
+        ) {
+
+        }
+    }
+    variantSet "Robot" = {
+        "None" {
+
+        }
+        "Robot" (
+            prepend payload = @./configuration/vega_1u_robot.usd@
+        ) {
+
+        }
+    }
+}
+
+def "Render" (
+    hide_in_stage_window = true
+    no_delete = true
+)
+{
+    def "OmniverseKit"
+    {
+        def "HydraTextures" (
+            hide_in_stage_window = true
+            no_delete = true
+        )
+        {
+            def RenderProduct "omni_kit_widget_viewport_ViewportTexture_0" (
+                prepend apiSchemas = ["OmniRtxSettingsCommonAdvancedAPI_1", "OmniRtxSettingsRtAdvancedAPI_1", "OmniRtxSettingsPtAdvancedAPI_1", "OmniRtxPostColorGradingAPI_1", "OmniRtxPostChromaticAberrationAPI_1", "OmniRtxPostBloomPhysicalAPI_1", "OmniRtxPostMatteObjectAPI_1", "OmniRtxPostCompositingAPI_1", "OmniRtxPostDofAPI_1", "OmniRtxPostMotionBlurAPI_1", "OmniRtxPostTvNoiseAPI_1", "OmniRtxPostTonemapIrayReinhardAPI_1", "OmniRtxPostDebugSettingsAPI_1", "OmniRtxDebugSettingsAPI_1"]
+                hide_in_stage_window = true
+                no_delete = true
+            )
+            {
+                rel camera = </OmniverseKit_Persp>
+                token omni:rtx:background:source:texture:textureMode = "repeatMirrored"
+                token omni:rtx:background:source:type = "domeLight"
+                bool omni:rtx:dlss:frameGeneration = 0
+                bool omni:rtx:material:db:nonVisualMaterialCSV:enabled = 0
+                bool omni:rtx:material:db:syncLoads = 1
+                token omni:rtx:post:dlss:execMode = "performance"
+                bool omni:rtx:post:registeredCompositing:invertColorCorrection = 1
+                bool omni:rtx:post:registeredCompositing:invertToneMap = 1
+                bool omni:rtx:pt:lightcache:cached:dontResolveConflicts = 1
+                int omni:rtx:pt:maxSamplesPerLaunch = 2073600
+                int omni:rtx:pt:mgpu:maxPixelsPerRegionExponent = 12
+                color3f omni:rtx:rt:ambientLight:color = (0.1, 0.1, 0.1)
+                bool omni:rtx:rt:demoire = 0
+                bool omni:rtx:rt:ecoMode:enabled
+                bool omni:rtx:rt:lightcache:spatialCache:dontResolveConflicts = 1
+                bool omni:rtx:scene:hydra:materialSyncLoads = 1
+                bool omni:rtx:scene:hydra:mdlMaterialWarmup = 1
+                uint omni:rtx:viewTile:limit = 4294967295
+                rel orderedVars = </Render/Vars/LdrColor>
+                custom bool overrideClipRange = 0
+                uniform int2 resolution = (1280, 720)
+            }
+        }
+    }
+
+    def RenderSettings "OmniverseGlobalRenderSettings" (
+        prepend apiSchemas = ["OmniRtxSettingsGlobalRtAdvancedAPI_1", "OmniRtxSettingsGlobalPtAdvancedAPI_1"]
+        no_delete = true
+    )
+    {
+        rel products = </Render/OmniverseKit/HydraTextures/omni_kit_widget_viewport_ViewportTexture_0>
+    }
+
+    def "Vars"
+    {
+        def RenderVar "LdrColor" (
+            hide_in_stage_window = true
+            no_delete = true
+        )
+        {
+            uniform string sourceName = "LdrColor"
+        }
+    }
+}
+

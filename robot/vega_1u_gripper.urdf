@@ -1,0 +1,968 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot name="vega_1u_gripper">
+  <joint name="L_arm_j1" type="revolute">
+    <origin xyz="0. 0.16946 -0. " rpy="0. 0. -0."/>
+    <parent link="arm_center"/>
+    <child link="vega_1u_L_arm_l1"/>
+    <axis xyz="0. 1. 0."/>
+    <limit lower="-3.071" upper="3.071" effort="150." velocity="2.4"/>
+  </joint>
+  <joint name="L_arm_j2" type="revolute">
+    <origin xyz="0.04 0.06 0.0454" rpy="0. 0. 0."/>
+    <parent link="vega_1u_L_arm_l1"/>
+    <child link="L_arm_l2"/>
+    <axis xyz="0. 0. 1."/>
+    <limit lower="-0.453" upper="1.5529999" effort="150." velocity="2.4"/>
+  </joint>
+  <joint name="L_arm_j3" type="revolute">
+    <origin xyz="0.1644 0. -0.043 " rpy="0. 0. 0."/>
+    <parent link="L_arm_l2"/>
+    <child link="L_arm_l3"/>
+    <axis xyz="1. 0. 0."/>
+    <limit lower="-3.15" upper="3.15" effort="80." velocity="2.6999998"/>
+  </joint>
+  <joint name="L_arm_j4" type="revolute">
+    <origin xyz="0.113 0.0433 0.06 " rpy="0. 0. 0."/>
+    <parent link="L_arm_l3"/>
+    <child link="L_arm_l4"/>
+    <axis xyz="0. 1. 0."/>
+    <limit lower="-3.071" upper="0.244" effort="80." velocity="2.6999998"/>
+  </joint>
+  <joint name="L_arm_j5" type="revolute">
+    <origin xyz="0.1938 -0.0434 -0.0400001" rpy="0. 0. 0."/>
+    <parent link="L_arm_l4"/>
+    <child link="L_arm_l5"/>
+    <axis xyz="1. 0. 0."/>
+    <limit lower="-3.071" upper="3.071" effort="25." velocity="2.6999998"/>
+  </joint>
+  <joint name="L_arm_j6" type="revolute">
+    <origin xyz="0.0762 0.0319 0. " rpy="0. 0. 0."/>
+    <parent link="L_arm_l5"/>
+    <child link="vega_1u_L_arm_l6"/>
+    <axis xyz="0. 1. 0."/>
+    <limit lower="-1.396" upper="1.396" effort="25." velocity="2.6999998"/>
+  </joint>
+  <joint name="L_arm_j7" type="revolute">
+    <origin xyz="0.065 -0.032 0.0319" rpy="0. 0. 0."/>
+    <parent link="vega_1u_L_arm_l6"/>
+    <child link="L_arm_l7"/>
+    <axis xyz="0. 0. 1."/>
+    <limit lower="-1.378" upper="1.1169999" effort="25." velocity="2.6999998"/>
+  </joint>
+  <joint name="L_arm_j8" type="fixed">
+    <origin xyz="0.11597 -0. -0.032 " rpy="0. 1.57079 0. "/>
+    <parent link="L_arm_l7"/>
+    <child link="L_arm_l8"/>
+  </joint>
+  <joint name="L_ee_fixed" type="fixed">
+    <origin xyz="-0.0000001 0.0000001 -0.0000001" rpy="0.0000062 0. 3.1415863"/>
+    <parent link="L_ee"/>
+    <child link="L_ee_link_gripper_link"/>
+  </joint>
+  <joint name="L_ee_j0" type="fixed">
+    <origin xyz="-0.0000001 0. 0. " rpy="-0. 0. -1.57079"/>
+    <parent link="L_arm_l8"/>
+    <child link="L_ee"/>
+  </joint>
+  <joint name="L_gripper_joint" type="revolute">
+    <origin xyz="0.0225 -0.01223 0.0825 " rpy="0. 0. 0."/>
+    <parent link="L_ee_link_gripper_link"/>
+    <child link="L_ee_link_gripper_active_link"/>
+    <axis xyz="0. 1. 0."/>
+    <limit lower="0." upper="0.6649704" effort="10000000." velocity="2.0"/>
+  </joint>
+  <joint name="L_gripper_joint_01" type="revolute">
+    <origin xyz="-0.0225 -0.012235 0.0825 " rpy="0. -0. 0."/>
+    <parent link="L_ee_link_gripper_link"/>
+    <child link="L_ee_link_gripper_passive_link"/>
+    <axis xyz="0. 1. 0."/>
+    <limit lower="-0.6649704" upper="0." effort="10." velocity="2.0"/>
+  </joint>
+  <joint name="Lift" type="prismatic">
+    <origin xyz="0. 0. 0.01" rpy="0. 0. 1.57079"/>
+    <parent link="vega_1u_base_link"/>
+    <child link="vega_1u_lift_link"/>
+    <axis xyz="0. 0. 1."/>
+    <limit lower="0." upper="0.4" effort="340282346638528859811704183484516925440." velocity="0.05"/>
+  </joint>
+  <joint name="R_arm_j1" type="revolute">
+    <origin xyz="-0. -0.16946 -0. " rpy="3.1415927 0. -0. "/>
+    <parent link="arm_center"/>
+    <child link="vega_1u_R_arm_l1"/>
+    <axis xyz="0. 1. 0."/>
+    <limit lower="-3.071" upper="3.071" effort="150." velocity="2.4"/>
+  </joint>
+  <joint name="R_arm_j2" type="revolute">
+    <origin xyz="0.04 0.06 -0.0454" rpy="3.1415927 0. 0. "/>
+    <parent link="vega_1u_R_arm_l1"/>
+    <child link="R_arm_l2"/>
+    <axis xyz="0. 0. 1."/>
+    <limit lower="-1.5529999" upper="0.453" effort="150." velocity="2.4"/>
+  </joint>
+  <joint name="R_arm_j3" type="revolute">
+    <origin xyz="0.1644 -0. -0.043 " rpy="0. 0. 0."/>
+    <parent link="R_arm_l2"/>
+    <child link="R_arm_l3"/>
+    <axis xyz="1. 0. 0."/>
+    <limit lower="-3.071" upper="3.071" effort="80." velocity="2.6999998"/>
+  </joint>
+  <joint name="R_arm_j4" type="revolute">
+    <origin xyz="0.113 0.0433 0.06 " rpy="0. 0. 0."/>
+    <parent link="R_arm_l3"/>
+    <child link="R_arm_l4"/>
+    <axis xyz="0. 1. 0."/>
+    <limit lower="-3.071" upper="0.244" effort="80." velocity="2.6999998"/>
+  </joint>
+  <joint name="R_arm_j5" type="revolute">
+    <origin xyz="0.1938 -0.0434 -0.0400001" rpy="0. 0. 0."/>
+    <parent link="R_arm_l4"/>
+    <child link="R_arm_l5"/>
+    <axis xyz="1. 0. 0."/>
+    <limit lower="-3.071" upper="3.071" effort="25." velocity="2.6999998"/>
+  </joint>
+  <joint name="R_arm_j6" type="revolute">
+    <origin xyz="0.0762 -0.0319 0. " rpy="3.1415927 0. 0. "/>
+    <parent link="R_arm_l5"/>
+    <child link="vega_1u_R_arm_l6"/>
+    <axis xyz="0. 1. 0."/>
+    <limit lower="-1.396" upper="1.396" effort="25." velocity="2.6999998"/>
+  </joint>
+  <joint name="R_arm_j7" type="revolute">
+    <origin xyz="0.065 -0.032 -0.0319" rpy="3.1415927 0. 0. "/>
+    <parent link="vega_1u_R_arm_l6"/>
+    <child link="R_arm_l7"/>
+    <axis xyz="0. 0. 1."/>
+    <limit lower="-1.1169999" upper="1.378" effort="25." velocity="2.6999998"/>
+  </joint>
+  <joint name="R_arm_j8" type="fixed">
+    <origin xyz="0.11597 0. -0.032 " rpy="0. 1.57079 0. "/>
+    <parent link="R_arm_l7"/>
+    <child link="R_arm_l8"/>
+  </joint>
+  <joint name="R_ee_fixed" type="fixed">
+    <origin xyz="0.0000001 -0.0000001 -0.0000001" rpy="0.0000062 0. 0.0000062"/>
+    <parent link="R_ee"/>
+    <child link="R_ee_link_gripper_link"/>
+  </joint>
+  <joint name="R_ee_j0" type="fixed">
+    <origin xyz="-0.0000001 0. 0. " rpy="0. 0. 1.57079"/>
+    <parent link="R_arm_l8"/>
+    <child link="R_ee"/>
+  </joint>
+  <joint name="R_gripper_joint" type="revolute">
+    <origin xyz="0.0225 -0.01223 0.0825 " rpy="0. 0. 0."/>
+    <parent link="R_ee_link_gripper_link"/>
+    <child link="R_ee_link_gripper_active_link"/>
+    <axis xyz="0. 1. 0."/>
+    <limit lower="0." upper="0.6649704" effort="10000000." velocity="2.0"/>
+  </joint>
+  <joint name="R_gripper_joint_01" type="revolute">
+    <origin xyz="-0.0225 -0.012235 0.0825 " rpy="0. -0. 0."/>
+    <parent link="R_ee_link_gripper_link"/>
+    <child link="R_ee_link_gripper_passive_link"/>
+    <axis xyz="0. 1. 0."/>
+    <limit lower="-0.6649704" upper="0." effort="10." velocity="2.0"/>
+  </joint>
+  <joint name="arm_center_j0" type="fixed">
+    <origin xyz="0. 0.03852 0.25982" rpy="0. 0. -1.57079"/>
+    <parent link="torso_flip_link"/>
+    <child link="arm_center"/>
+  </joint>
+  <joint name="head_j1" type="revolute">
+    <origin xyz="-0.0735 -0.0725 0.014 " rpy="0. 0. -0."/>
+    <parent link="arm_center"/>
+    <child link="vega_1u_head_l1"/>
+    <axis xyz="0. 1. 0."/>
+    <limit lower="-1.4829999" upper="1.4829999" effort="6." velocity="3.1999998"/>
+  </joint>
+  <joint name="head_j2" type="revolute">
+    <origin xyz="0. 0.0725 -0.0034999" rpy="0. 0. 0."/>
+    <parent link="vega_1u_head_l1"/>
+    <child link="vega_1u_head_l2"/>
+    <axis xyz="0. 0. 1."/>
+    <limit lower="-2.792" upper="2.792" effort="2.5" velocity="3.1999998"/>
+  </joint>
+  <joint name="head_j3" type="revolute">
+    <origin xyz="0. 0.002 0.0495" rpy="3.1415927 0. 0. "/>
+    <parent link="vega_1u_head_l2"/>
+    <child link="vega_1u_head_l3"/>
+    <axis xyz="0. 1. 0."/>
+    <limit lower="-1.378" upper="1.4829999" effort="6." velocity="3.1999998"/>
+  </joint>
+  <joint name="root_joint" type="fixed">
+    <origin xyz="0. 0. 0." rpy="0. 0. 0."/>
+    <parent link="vega_1u"/>
+    <child link="vega_1u_base_link"/>
+  </joint>
+  <joint name="torso_flip" type="revolute">
+    <origin xyz="0. -0.06187 0.786 " rpy="0. 0. 0."/>
+    <parent link="vega_1u_lift_link"/>
+    <child link="torso_flip_link"/>
+    <axis xyz="1. 0. 0."/>
+    <limit lower="0." upper="0.9999999" effort="340282346638528859811704183484516925440." velocity="0.1"/>
+  </joint>
+  <joint name="zed_left_camera_mount" type="fixed">
+    <origin xyz="0.0365 -0.023 -0.0489" rpy="1.5707963 -0.0000062 3.1415863"/>
+    <parent link="vega_1u_head_l3"/>
+    <child link="zed_left_camera"/>
+  </joint>
+  <joint name="zed_left_depth_mount" type="fixed">
+    <origin xyz="0.025 -0.023 -0.0489" rpy="1.5707963 -0.0000062 3.1415863"/>
+    <parent link="vega_1u_head_l3"/>
+    <child link="zed_depth_frame"/>
+  </joint>
+  <joint name="zed_right_camera_mount" type="fixed">
+    <origin xyz="0.0365 0.027 -0.0489" rpy="1.5707963 -0.0000062 3.1415863"/>
+    <parent link="vega_1u_head_l3"/>
+    <child link="zed_right_camera"/>
+  </joint>
+  <link name="L_arm_l2">
+    <inertial>
+      <origin xyz="0.08194 -0.0000015 -0.04058 " rpy="0. 0. 0."/>
+      <mass value="1.4059401"/>
+      <inertia ixx="0.00168" ixy="-0.0000001" ixz="0.00041" iyy="0.00441" iyz="0.0000002" izz="0.00412"/>
+    </inertial>
+    <visual>
+      <origin xyz="0. 0. 0." rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/L_arm_l2_visuals_arm_l2_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <visual>
+      <origin xyz="0. 0. 0." rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/L_arm_l2_collisions_arm_l2_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0. 0. 0." rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/L_arm_l2_collisions_arm_l2_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="L_arm_l3">
+    <inertial>
+      <origin xyz="0.07978 0.00403 0.0398 " rpy="0. 0. 0."/>
+      <mass value="1.1609401"/>
+      <inertia ixx="0.0017" ixy="-0.00011" ixz="-0.00104" iyy="0.00337" iyz="-0.0000779" izz="0.00257"/>
+    </inertial>
+    <visual>
+      <origin xyz="0. 0. 0." rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/L_arm_l3_visuals_arm_l3_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <visual>
+      <origin xyz="0. 0. 0." rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/L_arm_l3_collisions_arm_l3_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0. 0. 0." rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/L_arm_l3_collisions_arm_l3_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="L_arm_l4">
+    <inertial>
+      <origin xyz="0.09219 -0.03791 -0.02953" rpy="0. 0. 0."/>
+      <mass value="0.93204"/>
+      <inertia ixx="0.00101" ixy="0.00023" ixz="0.00042" iyy="0.00305" iyz="-0.00011" izz="0.00274"/>
+    </inertial>
+    <visual>
+      <origin xyz="0. 0. -0.0000001" rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/L_arm_l4_visuals_arm_l4_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <visual>
+      <origin xyz="0. 0. -0.0000001" rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/L_arm_l4_collisions_arm_l4_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0. 0. -0.0000001" rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/L_arm_l4_collisions_arm_l4_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="L_arm_l5">
+    <inertial>
+      <origin xyz="0.06497 -0.00266 0.000012" rpy="0. 0. 0."/>
+      <mass value="0.64582"/>
+      <inertia ixx="0.00034" ixy="0.0000054" ixz="-0.0000002" iyy="0.00056" iyz="0." izz="0.00052"/>
+    </inertial>
+    <visual>
+      <origin xyz="0. -0. 0." rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/L_arm_l5_visuals_arm_l5_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <visual>
+      <origin xyz="0. -0. 0." rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/L_arm_l5_collisions_arm_l5_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0. -0. 0." rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/L_arm_l5_collisions_arm_l5_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="L_arm_l7">
+    <inertial>
+      <origin xyz="0.032 0.0000548 -0.01786 " rpy="0. 0. 0."/>
+      <mass value="0.35802"/>
+      <inertia ixx="0.0002" ixy="-0." ixz="0.0000806" iyy="0.00031" iyz="-0." izz="0.00034"/>
+    </inertial>
+    <visual>
+      <origin xyz="0. -0. 0." rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/L_arm_l7_visuals_arm_l7_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <visual>
+      <origin xyz="0. -0. 0." rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/L_arm_l7_collisions_arm_l7_0_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <visual>
+      <origin xyz="0. -0. 0." rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/L_arm_l7_collisions_arm_l7_1_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0. -0. 0." rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/L_arm_l7_collisions_arm_l7_0_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </collision>
+    <collision>
+      <origin xyz="0. -0. 0." rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/L_arm_l7_collisions_arm_l7_1_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="L_arm_l8">
+    <inertial>
+      <origin xyz="-0.01782 -0.00021 0.00027" rpy="0. 0. 0."/>
+      <mass value="0.20064"/>
+      <inertia ixx="0.0000925" ixy="0.0000001" ixz="0.0000003" iyy="0.0000573" iyz="0.0000002" izz="0.0000568"/>
+    </inertial>
+    <visual>
+      <origin xyz="-0.0000001 0. 0. " rpy="0. -1.57079 0. "/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/L_arm_l8_visuals_arm_l8_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <visual>
+      <origin xyz="-0.0000001 0. 0. " rpy="0. -1.57079 0. "/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/L_arm_l8_collisions_arm_l8_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="-0.0000001 0. 0. " rpy="0. -1.57079 0. "/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/L_arm_l8_collisions_arm_l8_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="L_ee">
+    <inertial>
+      <origin xyz="0. 0. 0." rpy="0. 0. 0."/>
+      <mass value="1."/>
+      <inertia ixx="0.0001" ixy="0." ixz="0." iyy="0.0001" iyz="0." izz="0.0001"/>
+    </inertial>
+  </link>
+  <link name="L_ee_link_gripper_active_link">
+    <visual>
+      <origin xyz="-0. 0. -0." rpy="-1.5707957 0.0000001 -0.0000002"/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/L_ee_link_gripper_active_link_gripper_active_link.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="-0. 0. -0." rpy="-1.5707957 0.0000001 -0.0000002"/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/L_ee_link_gripper_active_link_gripper_active_link.obj" scale="1. 1. 1."/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="L_ee_link_gripper_link">
+    <visual>
+      <origin xyz="0. 0. 0." rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/L_ee_link_gripper_link_gripper_link.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <visual>
+      <origin xyz="0. -0.014417 0.195 " rpy="1.5707963 0. -3.1415925"/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/L_ee_link_gripper_link_gripper_ee_link_gripper_ee_link.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0. 0. 0." rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/L_ee_link_gripper_link_gripper_link.obj" scale="1. 1. 1."/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="L_ee_link_gripper_passive_link">
+    <visual>
+      <origin xyz="0. -0. -0." rpy="-1.5707963 -0. -0. "/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/L_ee_link_gripper_passive_link_left_gripper_passive_link.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0. -0. -0." rpy="-1.5707963 -0. -0. "/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/L_ee_link_gripper_passive_link_left_gripper_passive_link.obj" scale="1. 1. 1."/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="R_arm_l2">
+    <inertial>
+      <origin xyz="0.08749 -0.0000013 -0.04135 " rpy="0. 0. 0."/>
+      <mass value="1.40595"/>
+      <inertia ixx="0.00168" ixy="-0.0000001" ixz="0.00041" iyy="0.00441" iyz="0.0000002" izz="0.00412"/>
+    </inertial>
+    <visual>
+      <origin xyz="0. -0. 0." rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/R_arm_l2_visuals_arm_l2_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <visual>
+      <origin xyz="0. -0. 0." rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/R_arm_l2_collisions_arm_l2_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0. -0. 0." rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/R_arm_l2_collisions_arm_l2_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="R_arm_l3">
+    <inertial>
+      <origin xyz="0.08127 0.00414 0.04053" rpy="0. 0. 0."/>
+      <mass value="1.1608"/>
+      <inertia ixx="0.0017" ixy="-0.00011" ixz="-0.00104" iyy="0.00337" iyz="-0.0000833" izz="0.00257"/>
+    </inertial>
+    <visual>
+      <origin xyz="0. 0. 0." rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/R_arm_l3_visuals_arm_l3_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <visual>
+      <origin xyz="0. 0. 0." rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/R_arm_l3_collisions_arm_l3_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0. 0. 0." rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/R_arm_l3_collisions_arm_l3_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="R_arm_l4">
+    <inertial>
+      <origin xyz="0.07728 -0.03736 -0.02906" rpy="0. 0. 0."/>
+      <mass value="0.93204"/>
+      <inertia ixx="0.00101" ixy="0.00023" ixz="0.00042" iyy="0.00305" iyz="-0.00011" izz="0.00274"/>
+    </inertial>
+    <visual>
+      <origin xyz="0. 0. -0.0000001" rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/R_arm_l4_visuals_arm_l4_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <visual>
+      <origin xyz="0. 0. -0.0000001" rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/R_arm_l4_collisions_arm_l4_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0. 0. -0.0000001" rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/R_arm_l4_collisions_arm_l4_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="R_arm_l5">
+    <inertial>
+      <origin xyz="0.06457 0.0025 -0.000013" rpy="0. 0. 0."/>
+      <mass value="0.64582"/>
+      <inertia ixx="0.00034" ixy="-0.0000054" ixz="0.0000002" iyy="0.00056" iyz="0." izz="0.00052"/>
+    </inertial>
+    <visual>
+      <origin xyz="0. -0. 0." rpy="3.14159 0. 0. "/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/R_arm_l5_visuals_arm_l5_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <visual>
+      <origin xyz="0. -0. 0." rpy="3.14159 0. 0. "/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/R_arm_l5_collisions_arm_l5_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0. -0. 0." rpy="3.14159 0. 0. "/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/R_arm_l5_collisions_arm_l5_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="R_arm_l7">
+    <inertial>
+      <origin xyz="0.03048 0.0000512 -0.01709 " rpy="0. 0. 0."/>
+      <mass value="0.35802"/>
+      <inertia ixx="0.0002" ixy="-0." ixz="0.0000806" iyy="0.00031" iyz="-0." izz="0.00034"/>
+    </inertial>
+    <visual>
+      <origin xyz="0. 0. 0." rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/R_arm_l7_visuals_arm_l7_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <visual>
+      <origin xyz="0. 0. 0." rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/R_arm_l7_collisions_arm_l7_0_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <visual>
+      <origin xyz="0. 0. 0." rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/R_arm_l7_collisions_arm_l7_1_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0. 0. 0." rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/R_arm_l7_collisions_arm_l7_0_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </collision>
+    <collision>
+      <origin xyz="0. 0. 0." rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/R_arm_l7_collisions_arm_l7_1_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="R_arm_l8">
+    <inertial>
+      <origin xyz="-0.01782 0.000001 0.00027 " rpy="0. 0. 0."/>
+      <mass value="0.20064"/>
+      <inertia ixx="0.0000925" ixy="-0.0000001" ixz="0.0000003" iyy="0.0000573" iyz="0.0000002" izz="0.0000568"/>
+    </inertial>
+    <visual>
+      <origin xyz="-0.0000001 0. 0. " rpy="0. -1.57079 0. "/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/R_arm_l8_visuals_arm_l8_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <visual>
+      <origin xyz="-0.0000001 0. 0. " rpy="0. -1.57079 0. "/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/R_arm_l8_collisions_arm_l8_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="-0.0000001 0. 0. " rpy="0. -1.57079 0. "/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/R_arm_l8_collisions_arm_l8_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="R_ee">
+    <inertial>
+      <origin xyz="0. 0. 0." rpy="0. 0. 0."/>
+      <mass value="1."/>
+      <inertia ixx="0.0001" ixy="0." ixz="0." iyy="0.0001" iyz="0." izz="0.0001"/>
+    </inertial>
+  </link>
+  <link name="R_ee_link_gripper_active_link">
+    <visual>
+      <origin xyz="-0. 0. -0." rpy="-1.5707957 0.0000001 -0.0000002"/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/R_ee_link_gripper_active_link_gripper_active_link.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="-0. 0. -0." rpy="-1.5707957 0.0000001 -0.0000002"/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/R_ee_link_gripper_active_link_gripper_active_link.obj" scale="1. 1. 1."/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="R_ee_link_gripper_link">
+    <visual>
+      <origin xyz="0. 0. 0." rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/R_ee_link_gripper_link_gripper_link.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <visual>
+      <origin xyz="0. -0.014417 0.195 " rpy="1.5707963 0. -3.1415925"/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/R_ee_link_gripper_link_gripper_ee_link_gripper_ee_link.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0. 0. 0." rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/R_ee_link_gripper_link_gripper_link.obj" scale="1. 1. 1."/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="R_ee_link_gripper_passive_link">
+    <visual>
+      <origin xyz="0. -0. -0." rpy="-1.5707963 -0. -0. "/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/R_ee_link_gripper_passive_link_left_gripper_passive_link.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0. -0. -0." rpy="-1.5707963 -0. -0. "/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/R_ee_link_gripper_passive_link_left_gripper_passive_link.obj" scale="1. 1. 1."/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="arm_center">
+    <inertial>
+      <origin xyz="0. 0. 0." rpy="0. 0. 0."/>
+      <mass value="1."/>
+      <inertia ixx="0.0001" ixy="0." ixz="0." iyy="0.0001" iyz="0." izz="0.0001"/>
+    </inertial>
+  </link>
+  <link name="torso_flip_link">
+    <inertial>
+      <origin xyz="-0.0000171 0.06383 0.00204 " rpy="0. 0. 0."/>
+      <mass value="0.71794"/>
+      <inertia ixx="0.00119" ixy="0.0000002" ixz="-0." iyy="0.00128" iyz="0.0000013" izz="0.00244"/>
+    </inertial>
+    <visual>
+      <origin xyz="0. 0. 0." rpy="1.5707902 0. 0. "/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/torso_flip_link_visuals_torso_link_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <visual>
+      <origin xyz="0. 0. 0." rpy="1.5707902 0. 0. "/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/torso_flip_link_collisions_torso_link_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0. 0. 0." rpy="1.5707902 0. 0. "/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/torso_flip_link_collisions_torso_link_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="vega_1u"/>
+  <link name="vega_1u_L_arm_l1">
+    <inertial>
+      <origin xyz="0.0285 0.05287 0.00576" rpy="0. 0. 0."/>
+      <mass value="1.41351"/>
+      <inertia ixx="0.00168" ixy="-0.00031" ixz="-0.0000683" iyy="0.00185" iyz="-0.0000545" izz="0.00212"/>
+    </inertial>
+    <visual>
+      <origin xyz="0. 0. 0." rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/vega_1u_L_arm_l1_visuals_L_arm_l1_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <visual>
+      <origin xyz="0. 0. 0." rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/vega_1u_L_arm_l1_collisions_L_arm_l1_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0. 0. 0." rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/vega_1u_L_arm_l1_collisions_L_arm_l1_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="vega_1u_L_arm_l6">
+    <inertial>
+      <origin xyz="0.05526 -0.02615 -0.00267" rpy="0. 0. 0."/>
+      <mass value="0.5542"/>
+      <inertia ixx="0.00029" ixy="0.0000489" ixz="0.0000018" iyy="0.00042" iyz="-0.0000014" izz="0.00038"/>
+    </inertial>
+    <visual>
+      <origin xyz="0. 0. 0." rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/vega_1u_L_arm_l6_visuals_L_arm_l6_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <visual>
+      <origin xyz="0. 0. 0." rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/vega_1u_L_arm_l6_collisions_L_arm_l6_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0. 0. 0." rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/vega_1u_L_arm_l6_collisions_L_arm_l6_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="vega_1u_R_arm_l1">
+    <inertial>
+      <origin xyz="0.02833 -0.05 0.0054 " rpy="0. 0. 0."/>
+      <mass value="1.42401"/>
+      <inertia ixx="0.00159" ixy="0.00028" ixz="-0.0000407" iyy="0.00166" iyz="0.0000434" izz="0.00202"/>
+    </inertial>
+    <visual>
+      <origin xyz="0. 0. 0." rpy="3.1415927 0. 0. "/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/vega_1u_R_arm_l1_visuals_R_arm_l1_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <visual>
+      <origin xyz="0. 0. 0." rpy="3.1415927 0. 0. "/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/vega_1u_R_arm_l1_collisions_R_arm_l1_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0. 0. 0." rpy="3.1415927 0. 0. "/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/vega_1u_R_arm_l1_collisions_R_arm_l1_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="vega_1u_R_arm_l6">
+    <inertial>
+      <origin xyz="0.05525 0.02614 -0.00267" rpy="0. 0. 0."/>
+      <mass value="0.55372"/>
+      <inertia ixx="0.00029" ixy="-0.0000491" ixz="0.0000019" iyy="0.00042" iyz="0.0000015" izz="0.00038"/>
+    </inertial>
+    <visual>
+      <origin xyz="0. 0. 0." rpy="3.1415927 0. 0. "/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/vega_1u_R_arm_l6_visuals_R_arm_l6_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <visual>
+      <origin xyz="0. 0. 0." rpy="3.1415927 0. 0. "/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/vega_1u_R_arm_l6_collisions_R_arm_l6_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0. 0. 0." rpy="3.1415927 0. 0. "/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/vega_1u_R_arm_l6_collisions_R_arm_l6_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="vega_1u_base_link">
+    <inertial>
+      <origin xyz="-0.00062 -0.07869 0.02414" rpy="0. 0. 0."/>
+      <mass value="18.9102898"/>
+      <inertia ixx="0.60638" ixy="-0." ixz="-0.0000105" iyy="0.74482" iyz="0.0000003" izz="0.89592"/>
+    </inertial>
+    <visual>
+      <origin xyz="0. 0. 0." rpy="1.5707902 -0. 1.5707902"/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/vega_1u_base_link_visuals_base_link_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <visual>
+      <origin xyz="0. 0. 0." rpy="1.5707902 -0. 1.5707902"/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/vega_1u_base_link_collisions_base_link_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0. 0. 0." rpy="1.5707902 -0. 1.5707902"/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/vega_1u_base_link_collisions_base_link_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="vega_1u_head_l1">
+    <inertial>
+      <origin xyz="0.000013 0.07221 -0.02629 " rpy="0. 0. 0."/>
+      <mass value="0.4378"/>
+      <inertia ixx="0.00043" ixy="0." ixz="0.0000001" iyy="0.00025" iyz="-0.000001" izz="0.00051"/>
+    </inertial>
+    <visual>
+      <origin xyz="0. 0. 0.0000001" rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/vega_1u_head_l1_visuals_head_l1_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <visual>
+      <origin xyz="0. 0. 0.0000001" rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/head_l1_0_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <visual>
+      <origin xyz="0. 0. 0.0000001" rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/head_l1_1_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <visual>
+      <origin xyz="0. 0. 0.0000001" rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/head_l1_2_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0. 0. 0.0000001" rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/head_l1_0_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </collision>
+    <collision>
+      <origin xyz="0. 0. 0.0000001" rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/head_l1_1_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </collision>
+    <collision>
+      <origin xyz="0. 0. 0.0000001" rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/head_l1_2_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="vega_1u_head_l2">
+    <inertial>
+      <origin xyz="0.0000353 0.01618 0.03389 " rpy="0. 0. 0."/>
+      <mass value="0.60772"/>
+      <inertia ixx="0.00052" ixy="0.0000001" ixz="-0." iyy="0.00039" iyz="-0.0001" izz="0.0005"/>
+    </inertial>
+    <visual>
+      <origin xyz="0. 0. 0." rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/vega_1u_head_l2_visuals_head_l2_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <visual>
+      <origin xyz="0. 0. 0." rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/vega_1u_head_l2_collisions_head_l2_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0. 0. 0." rpy="0. 0. 0."/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/vega_1u_head_l2_collisions_head_l2_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="vega_1u_head_l3">
+    <inertial>
+      <origin xyz="0.00816 -0.00315 0.03745" rpy="0. 0. 0."/>
+      <mass value="0.63278"/>
+      <inertia ixx="0.00083" ixy="-0.0000022" ixz="-0.0000097" iyy="0.00034" iyz="-0.0000091" izz="0.00078"/>
+    </inertial>
+    <visual>
+      <origin xyz="0. 0. 0." rpy="3.1415927 0. 0. "/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/vega_1u_head_l3_visuals_head_l3_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <visual>
+      <origin xyz="0. 0. 0." rpy="3.1415927 0. 0. "/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/head_l3_0_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <visual>
+      <origin xyz="0. 0. 0." rpy="3.1415927 0. 0. "/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/head_l3_1_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0. 0. 0." rpy="3.1415927 0. 0. "/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/head_l3_0_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </collision>
+    <collision>
+      <origin xyz="0. 0. 0." rpy="3.1415927 0. 0. "/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/head_l3_1_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="vega_1u_lift_link">
+    <inertial>
+      <origin xyz="-0.0000028 0.00032 0.5141 " rpy="0. 0. 0."/>
+      <mass value="4.35777"/>
+      <inertia ixx="0.19538" ixy="0.0000002" ixz="0." iyy="0.19546" iyz="0.0000013" izz="0.01487"/>
+    </inertial>
+    <visual>
+      <origin xyz="0. 0. 0." rpy="1.5707902 0. 0. "/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/vega_1u_lift_link_visuals_lift_link_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <visual>
+      <origin xyz="0. 0. 0." rpy="1.5707902 0. 0. "/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/vega_1u_lift_link_collisions_lift_link_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0. 0. 0." rpy="1.5707902 0. 0. "/>
+      <geometry>
+        <mesh filename="file:///Yejun_Files/Works/Robotics/Results/Roco2026/USD files/robot_process/meshes/vega_1u_lift_link_collisions_lift_link_mesh.obj" scale="1. 1. 1."/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="zed_depth_frame">
+    <inertial>
+      <origin xyz="0. 0. 0." rpy="0. 0. 0."/>
+      <mass value="1."/>
+      <inertia ixx="0.0001" ixy="0." ixz="0." iyy="0.0001" iyz="0." izz="0.0001"/>
+    </inertial>
+  </link>
+  <link name="zed_left_camera">
+    <inertial>
+      <origin xyz="0. 0. 0." rpy="0. 0. 0."/>
+      <mass value="1."/>
+      <inertia ixx="0.0001" ixy="0." ixz="0." iyy="0.0001" iyz="0." izz="0.0001"/>
+    </inertial>
+  </link>
+  <link name="zed_right_camera">
+    <inertial>
+      <origin xyz="0. 0. 0." rpy="0. 0. 0."/>
+      <mass value="1."/>
+      <inertia ixx="0.0001" ixy="0." ixz="0." iyy="0.0001" iyz="0." izz="0.0001"/>
+    </inertial>
+  </link>
+</robot>

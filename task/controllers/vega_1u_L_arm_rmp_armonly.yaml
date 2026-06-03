@@ -1,0 +1,112 @@
+# ---------------------------------------------------------------
+# RMPflow configuration for vega_1u LEFT arm — ARM ONLY (7-DOF cspace).
+# Used when the R arm is the torso owner; Lift + torso_flip are fixed.
+# ---------------------------------------------------------------
+
+joint_limit_buffers: [.01, .01, .01, .01, .01, .01, .01]
+
+rmp_params:
+  cspace_target_rmp:
+    metric_scalar: 50.0
+    position_gain: 200.0
+    damping_gain: 50.0
+    robust_position_term_thresh: 0.2
+    inertia: 0.5
+
+  cspace_trajectory_rmp:
+    p_gain: 200.0
+    d_gain: 20.0
+    ff_gain: 0.25
+    weight: 50.0
+
+  cspace_affine_rmp:
+    final_handover_time_std_dev: 0.25
+    weight: 2000.0
+
+  joint_limit_rmp:
+    metric_scalar: 1000.0
+    metric_length_scale: 0.01
+    metric_exploder_eps: 1e-3
+    metric_velocity_gate_length_scale: 0.01
+    accel_damper_gain: 200.0
+    accel_potential_gain: 1.0
+    accel_potential_exploder_length_scale: 0.1
+    accel_potential_exploder_eps: 1e-2
+
+  joint_velocity_cap_rmp:
+    max_velocity: 1.0
+    velocity_damping_region: 0.3
+    damping_gain: 1000.0
+    metric_weight: 100.0
+
+  target_rmp:
+    accel_p_gain: 100.0
+    accel_d_gain: 85.0
+    accel_norm_eps: 0.075
+    metric_alpha_length_scale: 100000
+    min_metric_alpha: 0
+    max_metric_scalar: 10000.0
+    min_metric_scalar: 2500.0
+    proximity_metric_boost_scalar: 20.0
+    proximity_metric_boost_length_scale: 1
+    xi_estimator_gate_std_dev: 20000.0
+    accept_user_weights: false
+
+  axis_target_rmp:
+    accel_p_gain: 210.0
+    accel_d_gain: 60.0
+    metric_scalar: 10.0
+    proximity_metric_boost_scalar: 3000.0
+    proximity_metric_boost_length_scale: 0.08
+    xi_estimator_gate_std_dev: 20000.0
+    accept_user_weights: false
+
+  collision_rmp:
+    damping_gain: 50.0
+    damping_std_dev: 0.04
+    damping_robustness_eps: 1e-2
+    damping_velocity_gate_length_scale: 0.01
+    repulsion_gain: 800.0
+    repulsion_std_dev: 0.01
+    metric_modulation_radius: 0.5
+    metric_scalar: 10000.0
+    metric_exploder_std_dev: 0.02
+    metric_exploder_eps: 0.001
+
+  damping_rmp:
+    accel_d_gain: 30.0
+    metric_scalar: 50.0
+    inertia: 100.0
+
+canonical_resolve:
+  max_acceleration_norm: 50.0
+  projection_tolerance: 0.01
+  verbose: false
+
+body_cylinders:
+  - name: vega_1u_base_link
+    pt1: [0, 0, 0.333]
+    pt2: [0, 0, 0.0]
+    radius: 0.10
+
+body_collision_controllers:
+  - name: vega_1u_lift_link
+    radius: 0.15
+  - name: torso_flip_link
+    radius: 0.12
+  - name: vega_1u_L_arm_l1
+    radius: 0.08
+  - name: L_arm_l2
+    radius: 0.08
+  - name: L_arm_l3
+    radius: 0.07
+  - name: L_arm_l4
+    radius: 0.07
+  - name: L_arm_l5
+    radius: 0.05
+  - name: vega_1u_L_arm_l6
+    radius: 0.05
+  - name: L_arm_l7
+    radius: 0.05
+  - name: L_arm_l8
+    radius: 0.04

@@ -1,0 +1,26 @@
+[project]
+name = "taskboard-assembly"
+version = "0.0.0"
+description = "IROS 2026 vega_1u task board assembly challenge — Isaac Sim evaluation harness"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+    "isaacsim[all,extscache]==5.1.0.0",
+    "numpy<2",
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "ruff",
+    "ty",
+]
+
+[tool.uv]
+package = false
+environments = ["sys_platform == 'linux' and platform_machine == 'x86_64'"]
+override-dependencies = [
+    # Isaac Sim requires numpy 1.x.
+    "numpy==1.26.4",
+    # Work around Isaac Sim's unconditional pywin32 dependency on non-Windows platforms.
+    "pywin32==306 ; sys_platform == 'win32'",
+]

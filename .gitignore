@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# uv / virtualenv
+.venv/
+
+# type checker
+.ty/
+
+# logs / run outputs
+logs/
+outputs/
+
+# editor
+.vscode/
+
+# large run-output binaries (kept on disk, not version-controlled)
+task/scene_final.usd
+task/demo.mp4
+
+# ignore Sharpa North files
+robot/sharpa_north/

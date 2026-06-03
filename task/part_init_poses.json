@@ -1,0 +1,203 @@
+{
+  "_comment": "Per-part data for run_pick_place.py. ONE source of truth \u2014 auto-extracted spawn pose (pos/orn/mesh_path/rb_*) from extract_part_poses.py, plus hand-tuned pick_z (gripper target z; x/y inherit from pos). Re-running extract_part_poses.py preserves pick_z.",
+  "battery_size1": {
+    "path": "/World/parts/battery_size1",
+    "mesh_path": "/World/parts/battery_size1/_188no_gear_039/_188no_gear_039",
+    "pos": [
+      0.03362382810848652,
+      0.15554495946352315,
+      1.0447424810953798
+    ],
+    "orn": [
+      0.5000000247323763,
+      0.49999995815335024,
+      0.5000000418466485,
+      0.49999997526762
+    ],
+    "pick_z": 1.04503
+  },
+  "battery_size5": {
+    "path": "/World/parts/battery_size5",
+    "mesh_path": "/World/parts/battery_size5/_188_034/_188_035",
+    "pos": [
+      -0.010707539354027684,
+      0.16490109996482463,
+      1.037246986992077
+    ],
+    "orn": [
+      0.7071067811865476,
+      0.0,
+      0.0,
+      0.7071067811865475
+    ],
+    "pick_z": 1.03555
+  },
+  "bolt_8mm": {
+    "path": "/World/parts/bolt_8mm",
+    "mesh_path": "/World/parts/bolt_8mm/ICRA2022_Practice___M8x20_1/ICRA2022_Practice___M8x20_1",
+    "pos": [
+      0.04414765119637393,
+      0.0009342489011722951,
+      1.038454095094421
+    ],
+    "orn": [
+      0.6892024214851383,
+      0.6892024450755327,
+      0.0,
+      0.0
+    ],
+    "pick_z": 1.038,
+    "rb_path": "/World/parts/bolt_8mm",
+    "rb_pos": [
+      0.4780183866435436,
+      -0.061917651096433705,
+      1.3317008011466664
+    ],
+    "rb_orn": [
+      0.6892024214851383,
+      0.6892024450755327,
+      0.0,
+      0.0
+    ]
+  },
+  "ethernet": {
+    "path": "/World/parts/ethernet",
+    "mesh_path": "/World/parts/ethernet/_188_003/_188_003",
+    "pos": [
+      0.14839553505265815,
+      0.03874913162228289,
+      1.0488995803481664
+    ],
+    "orn": [
+      0.5000000000000001,
+      0.5,
+      -0.5,
+      -0.4999999999999999
+    ],
+    "pick_z": 1.056
+  },
+  "gear_20teeth": {
+    "path": "/World/parts/gear_20teeth",
+    "mesh_path": "/World/parts/gear_20teeth/gear_20teeth/gear_20teeth",
+    "pos": [
+      0.1436566623378162,
+      -0.040979269834964964,
+      1.045
+    ],
+    "orn": [
+      0.7071067811865476,
+      0.7071067811865475,
+      0.0,
+      0.0
+    ],
+    "pick_z": 1.04
+  },
+  "gear_60teeth": {
+    "path": "/World/parts/gear_60teeth",
+    "mesh_path": "/World/parts/gear_60teeth/gear_60teeth/gear_60teeth",
+    "pos": [
+      0.12280666120541667,
+      -0.08788925499956114,
+      1.04504
+    ],
+    "orn": [
+      0.7071067811865476,
+      0.7071067811865475,
+      0.0,
+      0.0
+    ],
+    "pick_z": 1.03788
+  },
+  "hdmi": {
+    "path": "/World/parts/hdmi",
+    "mesh_path": "/World/parts/hdmi/_188_025/_188_026",
+    "pos": [
+      0.27284694190588,
+      -0.01949373001154029,
+      1.043087716467154
+    ],
+    "orn": [
+      0.5000000000000001,
+      0.4999999999999999,
+      0.5,
+      0.5
+    ],
+    "pick_z": 1.03854
+  },
+  "pin": {
+    "path": "/World/parts/pin",
+    "mesh_path": "/World/parts/pin/_188_018/_188_018",
+    "pos": [
+      0.18600175968515764,
+      -0.01476081134843775,
+      1.0403542163395982
+    ],
+    "orn": [
+      0.7071067811865476,
+      0.7071067811865475,
+      0.0,
+      0.0
+    ],
+    "pick_z": 1.04437
+  },
+  "rod_16mm": {
+    "path": "/World/parts/rod_16mm",
+    "mesh_path": "/World/parts/rod_16mm/ICRA2022_Practice___RGOCG16_50_16mm_1/ICRA2022_Practice___RGOCG16_50_16mm_1",
+    "pos": [
+      0.08863273893578286,
+      0.05815318091797924,
+      1.044121882883777
+    ],
+    "orn": [
+      0.7071067690849304,
+      0.7071067932881644,
+      0.0,
+      0.0
+    ],
+    "pick_z": 1.04,
+    "rb_path": "/World/parts/rod_16mm",
+    "rb_pos": [
+      0.0076650462703506395,
+      0.05165262364950716,
+      1.235
+    ],
+    "rb_orn": [
+      0.7071067690849304,
+      0.7071067932881644,
+      0.0,
+      0.0
+    ]
+  },
+  "usb_a": {
+    "path": "/World/parts/usb_a",
+    "mesh_path": "/World/parts/usb_a/_188_026/_188_027",
+    "pos": [
+      0.025056671229388094,
+      -0.07026913287458814,
+      1.0398577944912226
+    ],
+    "orn": [
+      0.5,
+      0.5,
+      -0.5,
+      -0.5
+    ],
+    "pick_z": 1.03828
+  },
+  "usb_c": {
+    "path": "/World/parts/usb_c",
+    "mesh_path": "/World/parts/usb_c/_188_027/_188_027",
+    "pos": [
+      -0.020115483674024034,
+      -0.07246269928632615,
+      1.0420371345443582
+    ],
+    "orn": [
+      0.5000000000000001,
+      0.5,
+      0.5,
+      0.4999999999999999
+    ],
+    "pick_z": 1.03947
+  }
+}

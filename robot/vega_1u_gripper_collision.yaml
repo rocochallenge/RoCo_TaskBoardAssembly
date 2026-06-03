@@ -1,0 +1,296 @@
+# The robot description defines the generalized coordinates and how to map those
+# to the underlying URDF dofs.
+
+api_version: 1.0
+
+# Defines the generalized coordinates. Each generalized coordinate is assumed
+# to have an entry in the URDF.
+# Lula will only use these joints to control the robot position.
+cspace:
+    - Lift
+    - torso_flip
+    - L_arm_j1
+    - R_arm_j1
+    - head_j1
+    - L_arm_j2
+    - R_arm_j2
+    - head_j2
+    - L_arm_j3
+    - R_arm_j3
+    - head_j3
+    - L_arm_j4
+    - R_arm_j4
+    - L_arm_j5
+    - R_arm_j5
+    - L_arm_j6
+    - R_arm_j6
+    - L_arm_j7
+    - R_arm_j7
+default_q: [
+    0.0,1e-04,0.0208,-0.021,0.0127,-0.0,-0.0,0.0,-0.0005,-0.0006,-0.0076,-0.0131,-0.0134,-0.0,0.0,-0.0078,0.0078,0.0,0.0
+]
+
+acceleration_limits: [
+   10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10
+]
+
+jerk_limits: [
+   10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000
+]
+
+# Most dimensions of the cspace have a direct corresponding element
+# in the URDF. This list of rules defines how unspecified coordinates
+# should be extracted or how values in the URDF should be overwritten.
+
+cspace_to_urdf_rules:
+    - {name: L_gripper_joint, rule: fixed, value: -0.0}
+    - {name: L_gripper_joint_01, rule: fixed, value: -0.0}
+    - {name: R_gripper_joint, rule: fixed, value: -0.0}
+    - {name: R_gripper_joint_01, rule: fixed, value: -0.0}
+
+# Lula uses collision spheres to define the robot geometry in order to avoid
+# collisions with external obstacles.  If no spheres are specified, Lula will
+# not be able to avoid obstacles.
+
+collision_spheres:
+  - vega_1u_lift_link:
+    - "center": [-0.0, 0.04288, 0.65285]
+      "radius": 0.15
+    - "center": [-0.0, 0.03559, 0.43322]
+      "radius": 0.15
+    - "center": [-0.0, -0.0, 0.23473]
+      "radius": 0.11
+    - "center": [-0.0, 0.00762, 0.07777]
+      "radius": 0.09
+  - torso_flip_link:
+    - "center": [-0.10157, 0.06133, 0.25251]
+      "radius": 0.08
+    - "center": [0.11504, 0.05473, 0.26057]
+      "radius": 0.08
+    - "center": [-0.0, 0.06894, 0.16898]
+      "radius": 0.12
+    - "center": [0.0, 0.04247, 0.02138]
+      "radius": 0.12
+  - vega_1u_head_l1:
+    - "center": [-0.003, 0.107, -0.018]
+      "radius": 0.05527
+    - "center": [-0.0, 0.037, -0.015]
+      "radius": 0.05456
+    - "center": [0.003, 0.067, -0.036]
+      "radius": 0.05456
+  - vega_1u_head_l2:
+    - "center": [-0.005, 0.033, 0.029]
+      "radius": 0.05506
+    - "center": [-0.006, 0.004, 0.003]
+      "radius": 0.05506
+    - "center": [-0.002, -0.039, 0.024]
+      "radius": 0.05439
+  - vega_1u_head_l3:
+    - "center": [0.013, -0.01175, 0.021]
+      "radius": 0.07289
+    - "center": [0.00412, 0.01725, 0.019]
+      "radius": 0.07223
+  - vega_1u_L_arm_l1:
+    - "center": [0.013, 0.01248, -0.01]
+      "radius": 0.06497
+    - "center": [0.03476, 0.05471, -0.00334]
+      "radius": 0.077
+  - L_arm_l2:
+    - "center": [0.00539, -0.0038, -0.043]
+      "radius": 0.075
+    - "center": [0.071, 0.008, -0.03112]
+      "radius": 0.075
+    - "center": [0.10232, 0.001, -0.03158]
+      "radius": 0.075
+  - L_arm_l3:
+    - "center": [0.021, -0.004, 0.001]
+      "radius": 0.06
+    - "center": [0.123, 0.003, 0.063]
+      "radius": 0.06
+    - "center": [0.074, 0.003, 0.017]
+      "radius": 0.06
+  - L_arm_l4:
+    - "center": [0.00361, -0.04506, -0.008]
+      "radius": 0.07
+    - "center": [0.1432, -0.041, -0.047]
+      "radius": 0.065
+    - "center": [0.04, -0.04802, -0.027]
+      "radius": 0.065
+  - L_arm_l5:
+    - "center": [0.01822, 0.00064, 0.005]
+      "radius": 0.045
+    - "center": [0.07068, -0.01836, -0.004]
+      "radius": 0.045
+    - "center": [0.069, 0.0048, -0.002]
+      "radius": 0.045
+    - "center": [0.029, 0.002, 0.003]
+      "radius": 0.035
+  - vega_1u_L_arm_l6:
+    - "center": [0.0663, -0.03108, 0.01]
+      "radius": 0.04039
+    - "center": [0.06474, -0.03233, -0.02]
+      "radius": 0.04039
+    - "center": [0.03131, -0.01938, -0.002]
+      "radius": 0.04039
+    - "center": [-0.00836, -0.00503, 0.004]
+      "radius": 0.04039
+  - L_arm_l7:
+    - "center": [0.01103, 0.003, -0.016]
+      "radius": 0.05
+    - "center": [0.03948, 0.002, -0.029]
+      "radius": 0.05
+  - L_arm_l8:
+    - "center": [0.0, 0.0, -0.02209]
+      "radius": 0.04
+  - vega_1u_R_arm_l1:
+    - "center": [-0.013, -0.01248, -0.01]
+      "radius": 0.06497
+    - "center": [0.03476, -0.05817, 0.00284]
+      "radius": 0.077
+  - R_arm_l2:
+    - "center": [0.00539, -0.0038, -0.043]
+      "radius": 0.075
+    - "center": [0.071, 0.008, -0.03112]
+      "radius": 0.075
+    - "center": [0.10232, 0.001, -0.03158]
+      "radius": 0.075
+  - R_arm_l3:
+    - "center": [0.021, -0.004, 0.001]
+      "radius": 0.06
+    - "center": [0.123, 0.003, 0.063]
+      "radius": 0.06
+    - "center": [0.074, 0.003, 0.017]
+      "radius": 0.06
+  - R_arm_l4:
+    - "center": [0.00361, -0.04506, -0.008]
+      "radius": 0.07
+    - "center": [0.1432, -0.041, -0.047]
+      "radius": 0.065
+    - "center": [0.04, -0.04802, -0.027]
+      "radius": 0.065
+  - R_arm_l5:
+    - "center": [0.01822, 0.00064, -0.00226]
+      "radius": 0.045
+    - "center": [0.07068, -0.00744, -0.004]
+      "radius": 0.045
+    - "center": [0.069, 0.02331, -0.002]
+      "radius": 0.045
+    - "center": [0.029, 0.002, 0.003]
+      "radius": 0.035
+  - vega_1u_R_arm_l6:
+    - "center": [0.0663, 0.03559, 0.01]
+      "radius": 0.04039
+    - "center": [0.06474, 0.0303, -0.02711]
+      "radius": 0.04039
+    - "center": [0.03131, 0.00537, -0.002]
+      "radius": 0.04039
+    - "center": [-0.00644, 0.00352, 0.004]
+      "radius": 0.04039
+  - R_arm_l7:
+    - "center": [0.01103, 0.003, -0.016]
+      "radius": 0.05
+    - "center": [0.03948, 0.002, -0.029]
+      "radius": 0.05
+  - R_arm_l8:
+    - "center": [0.0, 0.0, -0.02209]
+      "radius": 0.04
+  - R_ee_link_gripper_active_link:
+    - "center": [-0.01, -0.081, -0.001]
+      "radius": 0.012
+    - "center": [-0.001, -0.06, -0.008]
+      "radius": 0.02256
+    - "center": [-0.0, -0.001, -0.0]
+      "radius": 0.02
+    - "center": [-0.002, -0.034, -0.01]
+      "radius": 0.025
+    - "center": [-0.012, -0.095, -0.002]
+      "radius": 0.01
+    - "center": [-0.019, -0.11, -0.001]
+      "radius": 0.008
+  - R_ee_link_gripper_link:
+    - "center": [-0.03, -0.009, 0.087]
+      "radius": 0.024
+    - "center": [0.009, -0.014, 0.086]
+      "radius": 0.02
+    - "center": [-0.016, 0.023, 0.071]
+      "radius": 0.032
+    - "center": [0.015, 0.014, 0.017]
+      "radius": 0.02922
+    - "center": [-0.012, 0.016, 0.025]
+      "radius": 0.02864
+    - "center": [0.024, 0.012, 0.087]
+      "radius": 0.025
+    - "center": [0.019, 0.03, 0.053]
+      "radius": 0.02
+    - "center": [0.024, -0.012, 0.051]
+      "radius": 0.027
+    - "center": [0.02, 0.038, 0.075]
+      "radius": 0.025
+    - "center": [-0.021, -0.009, 0.02]
+      "radius": 0.0257
+    - "center": [0.003, -0.015, 0.014]
+      "radius": 0.0257
+    - "center": [-0.016, -0.014, 0.057]
+      "radius": 0.028
+  - R_ee_link_gripper_passive_link:
+    - "center": [0.002, -0.064, -0.011]
+      "radius": 0.02256
+    - "center": [0.01, -0.082, -0.0]
+      "radius": 0.012
+    - "center": [0.019, -0.11, -0.002]
+      "radius": 0.008
+    - "center": [0.001, -0.007, -0.001]
+      "radius": 0.02
+    - "center": [0.0, -0.039, -0.01]
+      "radius": 0.025
+    - "center": [0.013, -0.097, 0.001]
+      "radius": 0.01
+  - L_ee_link_gripper_active_link:
+    - "center": [-0.018, -0.111, -0.002]
+      "radius": 0.008
+    - "center": [-0.001, -0.007, -0.001]
+      "radius": 0.02
+    - "center": [0.001, -0.038, -0.011]
+      "radius": 0.025
+    - "center": [-0.002, -0.07, -0.005]
+      "radius": 0.02256
+    - "center": [-0.018, -0.103, -0.003]
+      "radius": 0.01
+    - "center": [-0.012, -0.092, 0.0]
+      "radius": 0.012
+  - L_ee_link_gripper_link:
+    - "center": [-0.019, 0.036, 0.075]
+      "radius": 0.025
+    - "center": [-0.039, 0.012, 0.086]
+      "radius": 0.015
+    - "center": [0.007, 0.011, 0.014]
+      "radius": 0.03
+    - "center": [-0.013, -0.009, 0.078]
+      "radius": 0.02746
+    - "center": [0.018, 0.022, 0.077]
+      "radius": 0.033
+    - "center": [0.012, -0.003, 0.06]
+      "radius": 0.034
+    - "center": [-0.014, 0.015, 0.045]
+      "radius": 0.02
+    - "center": [-0.013, -0.006, 0.013]
+      "radius": 0.03
+    - "center": [0.012, -0.007, 0.017]
+      "radius": 0.03
+    - "center": [-0.018, -0.015, 0.051]
+      "radius": 0.024
+    - "center": [0.013, 0.017, 0.049]
+      "radius": 0.02
+  - L_ee_link_gripper_passive_link:
+    - "center": [0.011, -0.087, -0.001]
+      "radius": 0.012
+    - "center": [0.014, -0.098, -0.002]
+      "radius": 0.01
+    - "center": [0.008, -0.004, 0.004]
+      "radius": 0.02
+    - "center": [-0.003, -0.037, -0.01]
+      "radius": 0.02256
+    - "center": [-0.0, -0.065, -0.006]
+      "radius": 0.02204
+    - "center": [0.016, -0.109, -0.004]
+      "radius": 0.008

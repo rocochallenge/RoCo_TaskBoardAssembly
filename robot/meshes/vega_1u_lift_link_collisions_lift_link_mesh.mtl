@@ -1,0 +1,63 @@
+newmtl defaultplastic_001
+Kd 1.0 1.0 1.0
+Ka 1.0 1.0 1.0
+Ks 0.5 0.5 0.5
+Ns 10.0
+Tf 1.0 1.0 1.0
+d 1.0
+
+newmtl table_white
+Kd 1.0 1.0 1.0
+Ka 1.0 1.0 1.0
+Ks 0.5 0.5 0.5
+Ns 10.0
+Tf 1.0 1.0 1.0
+d 1.0
+
+newmtl defaultplastic_031
+Kd 1.0 1.0 1.0
+Ka 1.0 1.0 1.0
+Ks 0.5 0.5 0.5
+Ns 10.0
+Tf 1.0 1.0 1.0
+d 1.0
+
+newmtl defaultplastic_004
+Kd 1.0 1.0 1.0
+Ka 1.0 1.0 1.0
+Ks 0.5 0.5 0.5
+Ns 10.0
+Tf 1.0 1.0 1.0
+d 1.0
+
+newmtl defaultplastic_033
+Kd 1.0 1.0 1.0
+Ka 1.0 1.0 1.0
+Ks 0.5 0.5 0.5
+Ns 10.0
+Tf 1.0 1.0 1.0
+d 1.0
+
+newmtl white_3d_print
+Kd 1.0 1.0 1.0
+Ka 1.0 1.0 1.0
+Ks 0.5 0.5 0.5
+Ns 10.0
+Tf 1.0 1.0 1.0
+d 1.0
+
+newmtl defaultplastic_005
+Kd 1.0 1.0 1.0
+Ka 1.0 1.0 1.0
+Ks 0.5 0.5 0.5
+Ns 10.0
+Tf 1.0 1.0 1.0
+d 1.0
+
+newmtl table_white
+Kd 1.0 1.0 1.0
+Ka 1.0 1.0 1.0
+Ks 0.5 0.5 0.5
+Ns 10.0
+Tf 1.0 1.0 1.0
+d 1.0
