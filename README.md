@@ -326,3 +326,56 @@ Edit `task/param_config.py::part_order` to run a subset for debugging.
 See `task/README.md` for the per-runner gotchas (scene drive targets,
 the `SingleRigidPrim` ↔ FixedJoint tensor-view crash, SDF + FixedJoint
 crash, snap `connect_rot` requirement, etc.).
+
+## 🤖 Deploying a Learned Policy
+
+`policies/baseline_scripted.py` computes its actions from hand-written
+waypoints, but the `Policy` interface makes no assumption about *how* `act`
+produces them — a trained network can drive the same call just as well.
+[`task/policies/diffusion_lerobot.py`](task/policies/diffusion_lerobot.py) is a
+worked example (a LeRobot Diffusion Policy): each step it rebuilds the
+training-time observation from `Observation`, gets a 14-D action back, takes the
+left-arm slice `[xyz + euler + gripper]`, converts euler→quat, and drives the
+L-arm IK. It reads the three head/wrist camera frames, so run the harness with
+camera output enabled (see [Camera Interfaces](#camera-interfaces)).
+
+It's a **reference to adapt, not a plug-and-play checkpoint** — copy it and swap
+in your own model. The one wrinkle it solves is worth calling out, because most
+learned policies hit it: a modern policy stack (torch + a training framework
+like lerobot) generally can't share Isaac Sim's interpreter — Isaac pins numpy
+1.26 and its own torch build, and importing the framework in-process either
+clashes or crashes. So the model is kept out of the Isaac process entirely:
+
+- **[`task/policies/diffusion_lerobot.py`](task/policies/diffusion_lerobot.py)**
+  runs *inside* the harness (Isaac's interpreter). It implements `Policy`,
+  builds the observation, ships it over a stdin/stdout pipe, and decodes the
+  returned action. It depends only on `policy_api` + `param_config`, so it drops
+  in with no other new modules.
+- **[`task/dp_server.py`](task/dp_server.py)** runs *inside the model's own
+  venv*. It loads the checkpoint once, then answers length-prefixed pickle
+  requests (`{state, head, left, right}` in, `{action}` out). Nothing
+  framework-shaped is ever imported by Isaac.
+
+To plug in your own policy, keep this skeleton and swap the middle: reuse the
+observation building in `_build_state` / `act` and the action decoding, and
+replace the model call in `dp_server.py`. If your policy runs happily in Isaac's
+interpreter, drop the sidecar and call it directly from `act`, like the
+baseline.
+
+> **Observation note.** The example rebuilds the 44-D `observation.state` from
+> the public `Observation` surface (`ee_pose_L`, `joint_positions`,
+> `joint_velocities`). The right-arm **end-effector pose** is not part of the
+> public `EnvInfo`/`Observation` contract, so those 7 dims are zeroed unless the
+> harness provides an `R_controller` (picked up via `getattr`). A policy trained
+> on the full 44-D state should reconstruct the right EE pose from the right-arm
+> joints (forward kinematics) — adapt `_build_state` accordingly.
+
+Point it at a checkpoint with `DP_CKPT` (and `DP_SERVER_PY` at your model venv's
+python) and run:
+
+```bash
+DP_CKPT=/path/to/checkpoint/pretrained_model \
+DP_SERVER_PY=/path/to/model-venv/bin/python \
+uv run python task/run_pick_place.py \
+    --policy policies.diffusion_lerobot.DiffusionLeRobotPolicy
+```
