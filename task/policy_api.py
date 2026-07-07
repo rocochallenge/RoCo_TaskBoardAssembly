@@ -63,6 +63,10 @@ class EnvInfo:
     targets should ignore this — it's not part of the public Policy
     contract."""
 
+    R_controller: Optional[Any] = None
+    """Optional R-arm controller. Learned policies that reproduce dataset
+    state vectors can use this to recover the right end-effector pose."""
+
 
 @dataclass
 class PartTarget:

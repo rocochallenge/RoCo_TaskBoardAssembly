@@ -12,6 +12,8 @@ __pycache__/
 # logs / run outputs
 logs/
 outputs/
+artifacts/
+task/*_server.log
 
 # editor
 .vscode/

@@ -18,6 +18,8 @@ Participants implement one class — see
 AssemblyTask/
 ├── README.md                 # this file (organizer-facing overview)
 ├── PARTS.md                  # participant-facing parts/scoring reference
+├── docs/
+│   └── pi05_eval.md          # pi0.5 checkpoint eval recipe
 ├── pyproject.toml            # uv project: Isaac Sim 5.1.0 + numpy deps, resolver settings
 ├── uv.lock                   # pinned dependency graph (uv sync reproduces .venv/ from this)
 ├── .python-version           # pins CPython 3.11 for uv
@@ -50,7 +52,10 @@ AssemblyTask/
     ├── policy_api.py                      # Policy / Observation / PartTarget / EnvInfo
     ├── policies/
     │   ├── baseline_scripted.py           # reference EEPathFollower policy
+    │   ├── diffusion_lerobot.py           # LeRobot Diffusion Policy sidecar adapter
+    │   ├── pi05_lerobot.py                # LeRobot pi0.5 sidecar adapter
     │   └── template.py                    # participant stub
+    ├── dp_server.py, pi05_server.py       # model-env sidecar servers
     ├── param_config.py                    # SCENE_USD, INIT_JOINT_TARGETS, PART_CONFIG, part_order, ...
     ├── part_init_poses.json               # auto-extracted spawn poses + hand-tuned pick_z
     ├── extract_part_poses.py              # rebuilds part_init_poses.json from the loaded scene
@@ -224,9 +229,10 @@ enable_camera_output    = False  # bind sensors so RGB/depth are readable from P
 RGB/depth bound; viewport tiles still draw if `enable_camera_viewports`
 is True). When `True`, the harness exposes `head_depth_camera`,
 `L_wrist_camera`, `R_wrist_camera` handles to the policy via
-`Observation.rgb` / `Observation.depth` / `Observation.intrinsics`. To
-dump frames to disk, do it inside your policy (e.g. via PIL for PNG or
-numpy for `.npy`); the harness does not save frames itself.
+`Observation.rgb` / `Observation.depth` / `Observation.intrinsics`.
+Passing `--record-video <path>` also binds the sensors even if
+`enable_camera_output` is `False`, then writes an MP4 from one selected
+camera stream.
 
 Relocating a camera is done by editing the prim's `xformOp:translate` /
 `xformOp:orient` in `robot/vega_1u_gripper.usda` (or `scene_init.usd`)
@@ -305,6 +311,7 @@ import correctly:
 uv run python task/run_pick_place.py                                  # baseline policy
 uv run python task/run_pick_place.py --policy policies.my_team.MyPolicy
 uv run python task/run_pick_place.py --results-json out/results.json  # dump per-part pass/fail
+uv run python task/run_pick_place.py --record-video artifacts/head.mp4 # record a rollout
 ```
 
 If you instead have a standalone Omniverse-launcher Isaac Sim, its
@@ -321,6 +328,12 @@ CLI flags:
 - `--results-json <path>` — overrides `pc.RESULTS_JSON_PATH`. The
   harness writes a JSON of per-part pass/fail (with measured / target
   positions and tolerances) at the end of the run.
+- `--record-video <path>` — writes an MP4 from a task camera. Use
+  `--record-video-camera {head,L_wrist,R_wrist}` and
+  `--record-video-fps <fps>` to choose the stream and output FPS.
+- `--max-steps <n>`, `--max-sim-seconds <seconds>`, `--max-parts <n>` —
+  bounded eval/smoke-test exits. The runner still writes results JSON
+  and closes any video recorder before exiting.
 
 Edit `task/param_config.py::part_order` to run a subset for debugging.
 See `task/README.md` for the per-runner gotchas (scene drive targets,
@@ -331,47 +344,45 @@ crash, snap `connect_rot` requirement, etc.).
 
 `policies/baseline_scripted.py` computes its actions from hand-written
 waypoints, but the `Policy` interface makes no assumption about *how* `act`
-produces them — a trained network can drive the same call just as well.
-[`task/policies/diffusion_lerobot.py`](task/policies/diffusion_lerobot.py) is a
-worked example (a LeRobot Diffusion Policy): each step it rebuilds the
-training-time observation from `Observation`, gets a 14-D action back, takes the
-left-arm slice `[xyz + euler + gripper]`, converts euler→quat, and drives the
-L-arm IK. It reads the three head/wrist camera frames, so run the harness with
-camera output enabled (see [Camera Interfaces](#camera-interfaces)).
+produces them; a trained network can drive the same call. Learned-policy
+examples use a sidecar process because modern model stacks (torch + training
+frameworks such as LeRobot) usually cannot share Isaac Sim's pinned Python
+environment.
 
-It's a **reference to adapt, not a plug-and-play checkpoint** — copy it and swap
-in your own model. The one wrinkle it solves is worth calling out, because most
-learned policies hit it: a modern policy stack (torch + a training framework
-like lerobot) generally can't share Isaac Sim's interpreter — Isaac pins numpy
-1.26 and its own torch build, and importing the framework in-process either
-clashes or crashes. So the model is kept out of the Isaac process entirely:
+The sidecar pattern has two pieces:
 
-- **[`task/policies/diffusion_lerobot.py`](task/policies/diffusion_lerobot.py)**
-  runs *inside* the harness (Isaac's interpreter). It implements `Policy`,
-  builds the observation, ships it over a stdin/stdout pipe, and decodes the
-  returned action. It depends only on `policy_api` + `param_config`, so it drops
-  in with no other new modules.
-- **[`task/dp_server.py`](task/dp_server.py)** runs *inside the model's own
-  venv*. It loads the checkpoint once, then answers length-prefixed pickle
-  requests (`{state, head, left, right}` in, `{action}` out). Nothing
-  framework-shaped is ever imported by Isaac.
+- An Isaac-side `Policy` adapter builds the task observation, sends it over a
+  length-prefixed stdin/stdout pipe, decodes the returned action, and drives the
+  L-arm IK.
+- A model-env server runs in the model's own Python environment, loads the
+  checkpoint once, then answers inference requests. Isaac never imports the
+  model framework directly.
 
-To plug in your own policy, keep this skeleton and swap the middle: reuse the
-observation building in `_build_state` / `act` and the action decoding, and
-replace the model call in `dp_server.py`. If your policy runs happily in Isaac's
-interpreter, drop the sidecar and call it directly from `act`, like the
-baseline.
+Available adapters:
 
-> **Observation note.** The example rebuilds the 44-D `observation.state` from
-> the public `Observation` surface (`ee_pose_L`, `joint_positions`,
-> `joint_velocities`). The right-arm **end-effector pose** is not part of the
-> public `EnvInfo`/`Observation` contract, so those 7 dims are zeroed unless the
-> harness provides an `R_controller` (picked up via `getattr`). A policy trained
-> on the full 44-D state should reconstruct the right EE pose from the right-arm
-> joints (forward kinematics) — adapt `_build_state` accordingly.
+| Backend | Isaac-side adapter | Model-env server |
+|---------|--------------------|------------------|
+| LeRobot Diffusion Policy | [`task/policies/diffusion_lerobot.py`](task/policies/diffusion_lerobot.py) | [`task/dp_server.py`](task/dp_server.py) |
+| LeRobot pi0.5 | [`task/policies/pi05_lerobot.py`](task/policies/pi05_lerobot.py) | [`task/pi05_server.py`](task/pi05_server.py) |
 
-Point it at a checkpoint with `DP_CKPT` (and `DP_SERVER_PY` at your model venv's
-python) and run:
+Both examples rebuild the dataset-style 44-D `observation.state` plus
+head/L-wrist/R-wrist RGB images from the public `Observation` surface. The
+runner also provides `EnvInfo.R_controller`, so adapters can recover the
+right-arm end-effector pose when matching datasets that include it.
+
+The current learned-policy adapters expect a 14-D action:
+
+```text
+left xyz + left xyz Euler + left gripper + right xyz + right xyz Euler + right gripper
+```
+
+The runner still holds the R arm at its initial pose by default, so these
+adapters execute only the left-arm slice `[xyz + euler + gripper]`. Extend the
+runner's R-action path before treating the right half of the action as active
+bimanual control.
+
+Run the Diffusion Policy example by pointing it at a checkpoint with `DP_CKPT`
+and `DP_SERVER_PY`:
 
 ```bash
 DP_CKPT=/path/to/checkpoint/pretrained_model \
@@ -379,3 +390,16 @@ DP_SERVER_PY=/path/to/model-venv/bin/python \
 uv run python task/run_pick_place.py \
     --policy policies.diffusion_lerobot.DiffusionLeRobotPolicy
 ```
+
+Run a pi0.5 checkpoint with the bundled launcher:
+
+```bash
+LEROBOT_ROOT=/path/to/lerobot \
+PI05_CUDA_VISIBLE_DEVICES=0 \
+PI05_EVAL_MAX_STEPS=500 \
+./scripts/eval_pi05_roco.sh /path/to/checkpoint/pretrained_model
+```
+
+The pi0.5 launcher writes both an MP4 rollout and a results JSON by default.
+See [`docs/pi05_eval.md`](docs/pi05_eval.md) for Hugging Face auth, GPU
+selection, headless mode, and output-path options.

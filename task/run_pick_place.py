@@ -1,3 +1,4 @@
+# ruff: noqa: E402
 # Eval harness for the IROS 2026 vega_1u assembly challenge.
 #
 # Iterates pc.part_order. For each part: optionally spawns it, creates a
@@ -12,15 +13,48 @@
 #
 # R arm holds its init joint pose every step.
 
+import os
+import subprocess
+import sys
+
+_LAUNCH_CWD = os.getcwd()
+
 from isaacsim import SimulationApp
 
-simulation_app = SimulationApp({"headless": False})
+def _env_flag(name, default=False):
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    return raw.lower() in {"1", "true", "yes", "on"}
+
+
+def _env_int(name):
+    raw = os.getenv(name)
+    return None if raw in (None, "") else int(raw)
+
+
+def _env_float(name):
+    raw = os.getenv(name)
+    return None if raw in (None, "") else float(raw)
+
+
+_HEADLESS = _env_flag("ISAACSIM_HEADLESS")
+_SIM_CONFIG = {
+    "headless": _HEADLESS,
+    "multi_gpu": _env_flag("ISAACSIM_MULTI_GPU", default=False),
+}
+_ACTIVE_GPU = _env_int("ISAACSIM_ACTIVE_GPU")
+_PHYSICS_GPU = _env_int("ISAACSIM_PHYSICS_GPU")
+if _ACTIVE_GPU is not None:
+    _SIM_CONFIG["active_gpu"] = _ACTIVE_GPU
+if _PHYSICS_GPU is not None:
+    _SIM_CONFIG["physics_gpu"] = _PHYSICS_GPU
+
+simulation_app = SimulationApp(_SIM_CONFIG)
 
 import argparse
 import importlib
 import json
-import os
-import sys
 import numpy as np
 
 import param_config as pc
@@ -67,6 +101,85 @@ STUCK_LOG_STEPS = 100
 # against wp.orn. R_offset = (0, 0, 0, -1) (180° about Z). Without this
 # composition the stuck-diagnostic comparison shows a fake ~180° error.
 _R_OFFSET_FK_TO_STAGE = np.array([0.0, 0.0, 0.0, -1.0], dtype=np.float64)
+
+
+class FfmpegVideoRecorder:
+    def __init__(self, path, fps=30, camera="head"):
+        self.path = path
+        self.fps = int(fps)
+        self.camera = camera
+        self._proc = None
+        self._shape = None
+        self.frames = 0
+
+    @property
+    def enabled(self):
+        return bool(self.path)
+
+    def write(self, frame):
+        if not self.enabled or frame is None:
+            return
+        arr = np.asarray(frame)
+        if arr.ndim == 2:
+            arr = np.repeat(arr[..., None], 3, axis=-1)
+        if arr.ndim != 3 or arr.shape[-1] < 3:
+            return
+        arr = arr[..., :3]
+        if arr.dtype != np.uint8:
+            arr = np.nan_to_num(arr, nan=0.0, posinf=0.0, neginf=0.0)
+            if arr.size and float(np.nanmax(arr)) <= 1.0:
+                arr = arr * 255.0
+            arr = np.clip(arr, 0, 255).astype(np.uint8)
+        arr = np.ascontiguousarray(arr)
+        h, w = arr.shape[:2]
+        if self._proc is None:
+            self._start(w, h)
+        if self._shape != (h, w):
+            raise ValueError(
+                f"video frame size changed from {self._shape} to {(h, w)}"
+            )
+        self._proc.stdin.write(arr.tobytes())
+        self.frames += 1
+
+    def _start(self, width, height):
+        os.makedirs(os.path.dirname(os.path.abspath(self.path)), exist_ok=True)
+        cmd = [
+            "ffmpeg",
+            "-y",
+            "-loglevel",
+            "error",
+            "-f",
+            "rawvideo",
+            "-pix_fmt",
+            "rgb24",
+            "-s",
+            f"{width}x{height}",
+            "-r",
+            str(self.fps),
+            "-i",
+            "-",
+            "-an",
+            "-vcodec",
+            "libx264",
+            "-pix_fmt",
+            "yuv420p",
+            self.path,
+        ]
+        self._proc = subprocess.Popen(cmd, stdin=subprocess.PIPE)
+        self._shape = (height, width)
+
+    def close(self):
+        if self._proc is None:
+            return
+        try:
+            if self._proc.stdin:
+                self._proc.stdin.close()
+            ret = self._proc.wait()
+            if ret != 0:
+                raise RuntimeError(f"ffmpeg exited with code {ret}")
+            print(f"[video] wrote {self.frames} frames -> {self.path}")
+        finally:
+            self._proc = None
 
 
 def _quat_mul(q1, q2):
@@ -244,7 +357,7 @@ def import_missing_parts():
         approximation = cfg.get(
             "collision_approximation", _DEFAULT_COLLISION_APPROXIMATION
         )
-        n_meshes = _apply_mesh_colliders(stage, prim_path, approximation)
+        _apply_mesh_colliders(stage, prim_path, approximation)
         DynamicPart(
             prim_path=prim_path,
             name=name,
@@ -377,7 +490,7 @@ def _override_scene_part_xy(stage, prim_path, target_xy, name):
           f"{body_prim.GetPath()} (found: {op_names}) — can't override XY.")
 
 
-def _grade_task(stage, snap_fired_parts, results_json_path=None):
+def _grade_task(stage, snap_fired_parts, results_json_path=None, metadata=None):
     """End-of-iteration summary: pass/fail for every name in pc.part_order.
 
     Grading rule per part:
@@ -529,6 +642,7 @@ def _grade_task(stage, snap_fired_parts, results_json_path=None):
         try:
             os.makedirs(os.path.dirname(abs_path) or ".", exist_ok=True)
             payload = {
+                "metadata": dict(metadata or {}),
                 "pos_tol_m": GRADE_POS_TOL_M,
                 "n_pass": n_pass,
                 "n_fail": n_fail,
@@ -559,9 +673,56 @@ def _parse_args():
         help="Override pc.RESULTS_JSON_PATH. If set, _grade_task writes the "
              "per-part pass/fail summary to this file at the end of the run.",
     )
+    parser.add_argument(
+        "--record-video",
+        default=None,
+        help="Write an MP4 rollout video from one of the task cameras.",
+    )
+    parser.add_argument(
+        "--record-video-camera",
+        default="head",
+        choices=("head", "L_wrist", "R_wrist"),
+        help="Camera stream to record when --record-video is set.",
+    )
+    parser.add_argument(
+        "--record-video-fps",
+        type=int,
+        default=30,
+        help="Output video frame rate. Frames are sampled from sim time.",
+    )
+    parser.add_argument(
+        "--max-steps",
+        type=int,
+        default=_env_int("ROCO_EVAL_MAX_STEPS"),
+        help="Stop after this many task-control steps and still write "
+             "results JSON/video. Useful for smoke tests.",
+    )
+    parser.add_argument(
+        "--max-sim-seconds",
+        type=float,
+        default=_env_float("ROCO_EVAL_MAX_SIM_SECONDS"),
+        help="Stop after this much simulated task time and still write "
+             "results JSON/video. Useful for smoke tests.",
+    )
+    parser.add_argument(
+        "--max-parts",
+        type=int,
+        default=_env_int("ROCO_EVAL_MAX_PARTS"),
+        help="Stop after this many parts have ended by policy done, snap, "
+             "or timeout.",
+    )
     # SimulationApp consumes argv too; tolerate unknown args so the runner
     # can be launched as ${ISAAC_SIM}/python.sh run_pick_place.py --policy ...
-    return parser.parse_known_args()[0]
+    args = parser.parse_known_args()[0]
+    for attr in ("max_steps", "max_sim_seconds", "max_parts"):
+        value = getattr(args, attr, None)
+        if value is not None and value <= 0:
+            setattr(args, attr, None)
+    for attr in ("results_json", "record_video"):
+        value = getattr(args, attr, None)
+        if value and not os.path.isabs(value):
+            setattr(args, attr, os.path.abspath(os.path.join(_LAUNCH_CWD, value)))
+    return args
 
 
 def _load_policy_class(dotted_path: str):
@@ -586,6 +747,19 @@ def _load_policy_class(dotted_path: str):
 
 def main():
     args = _parse_args()
+    video_recorder = FfmpegVideoRecorder(
+        args.record_video,
+        fps=args.record_video_fps,
+        camera=args.record_video_camera,
+    )
+    record_period_s = 1.0 / float(max(1, args.record_video_fps))
+    next_record_time_s = 0.0
+    camera_output_enabled = bool(pc.enable_camera_output or video_recorder.enabled)
+    exit_on_complete = bool(_HEADLESS or video_recorder.enabled)
+    run_complete = False
+    finalized = False
+    total_task_steps = 0
+    completed_parts = 0
 
     # The task signature still requires L/R object prim paths. Point both
     # at a STATIC prim so the task's SingleRigidPrim wrapper never aliases
@@ -604,7 +778,7 @@ def main():
         joint_opened_position=np.array([pc.PART_DEFAULTS["gripper_open"]]),
         joint_closed_position=np.array([pc.PART_DEFAULTS["gripper_close"]]),
         enable_camera_viewports=pc.enable_camera_viewports,
-        enable_camera_output=pc.enable_camera_output,
+        enable_camera_output=camera_output_enabled,
     )
 
     # Spawn any pc.part_order entries that aren't already in the loaded scene.
@@ -613,7 +787,6 @@ def main():
     L_controller = my_controller["L"]
     R_controller = my_controller["R"]
     L_robot = my_robots["L"]
-    R_robot = my_robots["R"]
 
     dof_names = list(L_robot.dof_names)
     R_arm_dof_indices = np.array(
@@ -661,8 +834,9 @@ def main():
         L_gripper_joint="L_gripper_joint",
         L_arm_init_q=L_arm_init_q.copy(),
         physics_dt=1.0 / 200.0,
-        enable_camera_output=pc.enable_camera_output,
+        enable_camera_output=camera_output_enabled,
         L_controller=L_controller,
+        R_controller=R_controller,
     )
 
     policy_class = _load_policy_class(args.policy)
@@ -716,7 +890,7 @@ def main():
         rgb = {"head": None, "L_wrist": None, "R_wrist": None}
         depth = {"head": None, "L_wrist": None, "R_wrist": None}
         intrinsics = {"head": None, "L_wrist": None, "R_wrist": None}
-        if pc.enable_camera_output:
+        if camera_output_enabled:
             for key, cam in (("head", head_depth_camera),
                              ("L_wrist", L_wrist_camera),
                              ("R_wrist", R_wrist_camera)):
@@ -781,9 +955,28 @@ def main():
             extra=dict(cfg),
         )
 
-    def _finalize_iteration():
+    def _finalize_iteration(reason="complete"):
+        nonlocal finalized
+        if finalized:
+            return
+        finalized = True
+        metadata = {
+            "completion_reason": reason,
+            "current_part": current_part,
+            "completed_parts": int(completed_parts),
+            "total_task_steps": int(total_task_steps),
+            "sim_time_s": (
+                float(my_world.current_time_step_index * env_info.physics_dt)
+                if my_world is not None else None
+            ),
+            "max_steps": args.max_steps,
+            "max_sim_seconds": args.max_sim_seconds,
+            "max_parts": args.max_parts,
+            "snap_fired_parts": sorted(snap_fired_parts),
+        }
         _grade_task(stage, snap_fired_parts,
-                    results_json_path=args.results_json)
+                    results_json_path=args.results_json,
+                    metadata=metadata)
         save_path = getattr(pc, "SAVE_FINAL_STAGE_PATH", None)
         if save_path:
             _save_stage_snapshot(save_path)
@@ -791,21 +984,31 @@ def main():
     def _start_next_part():
         """Advance to the next part: build snap attacher, call policy.reset()."""
         nonlocal current_part, current_snap_attacher, current_snap_sub
-        nonlocal part_step_count
+        nonlocal part_step_count, run_complete, completed_parts
 
         # Record previous part's snap status before clearing.
         if (current_part is not None
                 and current_snap_attacher is not None
                 and current_snap_attacher.attached):
             snap_fired_parts.add(current_part)
+        if current_part is not None:
+            completed_parts += 1
         _clear_snap_state()
+
+        if args.max_parts and completed_parts >= args.max_parts:
+            current_part = None
+            run_complete = True
+            print(f"[setup] reached max-parts={args.max_parts}; ending early.")
+            _finalize_iteration("max_parts")
+            return None
 
         try:
             current_part = next(parts_iter)
         except StopIteration:
             current_part = None
+            run_complete = True
             print("[setup] All parts done.")
-            _finalize_iteration()
+            _finalize_iteration("complete")
             return None
 
         cfg = pc.get_part_config(current_part)
@@ -837,8 +1040,15 @@ def main():
 
     def _restart_iteration():
         nonlocal parts_iter, current_part
+        nonlocal next_record_time_s, run_complete
+        nonlocal total_task_steps, completed_parts, finalized
         _clear_snap_state()
         snap_fired_parts.clear()
+        run_complete = False
+        finalized = False
+        total_task_steps = 0
+        completed_parts = 0
+        next_record_time_s = 0.0
         # Remove any FixedJoints that snap_attach authored on previous
         # iterations. Joints live in USD and persist across my_world.stop()
         # / play(), so without cleanup the bolt (and any other snap part)
@@ -857,79 +1067,127 @@ def main():
         _start_next_part()
 
     _restart_iteration()
+    if exit_on_complete:
+        try:
+            my_world.play()
+        except Exception:
+            pass
 
-    while simulation_app.is_running():
-        my_world.step(render=True)
+    try:
+        while simulation_app.is_running():
+            my_world.step(render=True)
 
-        if not my_world.is_playing():
-            if my_world.is_stopped():
-                reset_needed = True
-            continue
+            if run_complete and exit_on_complete:
+                break
 
-        if reset_needed:
-            my_world.reset()
-            reset_needed = False
-            _apply_init_joint_targets()
-            L_controller.reset()
-            R_controller.reset()
-            _restart_iteration()
+            if not my_world.is_playing():
+                if my_world.is_stopped():
+                    reset_needed = True
+                if not exit_on_complete:
+                    continue
 
-        if my_world.current_time_step_index == 0:
-            _apply_init_joint_targets()
-            L_controller.reset()
-            R_controller.reset()
-            _restart_iteration()
+            if reset_needed:
+                my_world.reset()
+                reset_needed = False
+                _apply_init_joint_targets()
+                L_controller.reset()
+                R_controller.reset()
+                _restart_iteration()
+                if exit_on_complete:
+                    try:
+                        my_world.play()
+                    except Exception:
+                        pass
 
-        # Warmup: skip task logic until PhysX has had time to cook
-        # colliders (SDF meshes in particular) and joints have settled to
-        # their init drive targets.
-        _warmup_steps = int(getattr(pc, "WARMUP_STEPS", 0))
-        if (_warmup_steps > 0
-                and my_world.current_time_step_index < _warmup_steps):
-            _apply_init_joint_targets()
-            if my_world.current_time_step_index == _warmup_steps - 1:
-                print(f"[setup] warmup done ({_warmup_steps} steps); "
-                      f"starting task.")
-            continue
+            if my_world.current_time_step_index == 0:
+                _apply_init_joint_targets()
+                L_controller.reset()
+                R_controller.reset()
+                _restart_iteration()
+                if exit_on_complete:
+                    try:
+                        my_world.play()
+                    except Exception:
+                        pass
 
-        if current_part is None:
-            continue
+            # Warmup: skip task logic until PhysX has had time to cook
+            # colliders (SDF meshes in particular) and joints have settled to
+            # their init drive targets.
+            _warmup_steps = int(getattr(pc, "WARMUP_STEPS", 0))
+            if (_warmup_steps > 0
+                    and my_world.current_time_step_index < _warmup_steps):
+                _apply_init_joint_targets()
+                if my_world.current_time_step_index == _warmup_steps - 1:
+                    print(f"[setup] warmup done ({_warmup_steps} steps); "
+                          f"starting task.")
+                continue
 
-        obs = _build_observation()
+            if current_part is None:
+                continue
 
-        # Latch snap-fired into the per-iteration record as soon as the
-        # attacher reports it (so a snap that fires on the very last tick
-        # before timeout still counts as pass at grading time).
-        if (current_snap_attacher is not None
-                and current_snap_attacher.attached):
-            snap_fired_parts.add(current_part)
+            obs = _build_observation()
+            sim_time_s = my_world.current_time_step_index * env_info.physics_dt
+            if video_recorder.enabled:
+                if sim_time_s + 1e-9 >= next_record_time_s:
+                    video_recorder.write(obs.rgb.get(video_recorder.camera))
+                    next_record_time_s += record_period_s
 
-        cfg = pc.get_part_config(current_part)
-        is_snap_done = (cfg.get("release_mode") == "snap"
-                        and current_snap_attacher is not None
-                        and current_snap_attacher.attached)
-        is_timeout = part_step_count >= PER_PART_TIMEOUT_STEPS
+            total_task_steps += 1
+            if args.max_steps and total_task_steps >= args.max_steps:
+                run_complete = True
+                print(f"[setup] reached max-steps={args.max_steps}; "
+                      "ending early.")
+                _finalize_iteration("max_steps")
+                break
+            if (args.max_sim_seconds
+                    and sim_time_s + 1e-9 >= args.max_sim_seconds):
+                run_complete = True
+                print(f"[setup] reached max-sim-seconds="
+                      f"{args.max_sim_seconds:g}; ending early.")
+                _finalize_iteration("max_sim_seconds")
+                break
 
-        if policy.is_done(obs) or is_snap_done or is_timeout:
-            if is_timeout:
-                print(f"[setup] {current_part}: per-part timeout "
-                      f"({PER_PART_TIMEOUT_STEPS} steps) — advancing.")
-            _start_next_part()
-            continue
+            # Latch snap-fired into the per-iteration record as soon as the
+            # attacher reports it (so a snap that fires on the very last tick
+            # before timeout still counts as pass at grading time).
+            if (current_snap_attacher is not None
+                    and current_snap_attacher.attached):
+                snap_fired_parts.add(current_part)
 
-        L_action = policy.act(obs)
+            cfg = pc.get_part_config(current_part)
+            is_snap_done = (cfg.get("release_mode") == "snap"
+                            and current_snap_attacher is not None
+                            and current_snap_attacher.attached)
+            snap_tick_count = (
+                int(getattr(current_snap_attacher, "_tick", 0))
+                if current_snap_attacher is not None else 0
+            )
+            is_timeout = (
+                part_step_count >= PER_PART_TIMEOUT_STEPS
+                or snap_tick_count >= PER_PART_TIMEOUT_STEPS
+            )
 
-        R_action_positions = [None] * len(dof_names)
-        for j_idx, val in zip(R_arm_dof_indices, R_arm_hold_q.tolist()):
-            R_action_positions[j_idx] = float(val)
-        R_action = ArticulationAction(joint_positions=R_action_positions)
+            if policy.is_done(obs) or is_snap_done or is_timeout:
+                if is_timeout:
+                    print(f"[setup] {current_part}: per-part timeout "
+                          f"({PER_PART_TIMEOUT_STEPS} steps) — advancing.")
+                _start_next_part()
+                continue
 
-        merged = merge_bimanual_actions(L_action, R_action, dof_names)
-        articulation_controller.apply_action(merged)
+            L_action = policy.act(obs)
 
-        part_step_count += 1
+            R_action_positions = [None] * len(dof_names)
+            for j_idx, val in zip(R_arm_dof_indices, R_arm_hold_q.tolist()):
+                R_action_positions[j_idx] = float(val)
+            R_action = ArticulationAction(joint_positions=R_action_positions)
 
-    simulation_app.close()
+            merged = merge_bimanual_actions(L_action, R_action, dof_names)
+            articulation_controller.apply_action(merged)
+
+            part_step_count += 1
+    finally:
+        video_recorder.close()
+        simulation_app.close()
 
 
 if __name__ == "__main__":

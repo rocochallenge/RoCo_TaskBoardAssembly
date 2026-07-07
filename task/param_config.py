@@ -68,8 +68,8 @@ PART_INIT_POSES = _load_part_init_poses()
 # those parts is pinned in PART_CONFIG to the mesh world xy read from this
 # same file.
 SCENE_USD = "../scene_init.usd"
-L_object_prim_path = "/World/parts/rod_16mm"   # static
-R_object_prim_path = "/World/parts/rod_16mm"
+L_object_prim_path = "/World/task_board/task_board_color"   # static
+R_object_prim_path = "/World/task_board/task_board_color"
 
 # Optional path to dump a flattened USD snapshot of the stage when the
 # part iteration finishes (i.e. after all parts in part_order have been
@@ -107,7 +107,7 @@ WARMUP_STEPS = 60
 # descend_place) routinely cross the threshold and would spam the
 # log. Flip to True to debug a real hang (no advance, snap never
 # fires, IK failing, gripper slipping).
-VERBOSE_STUCK = True
+VERBOSE_STUCK = False
 
 # Camera config. The three cameras live in the robot USD now:
 #   headcam     at /World/robotics/vega_1u_gripper/zed_depth_frame/headcam
@@ -297,7 +297,7 @@ PART_CONFIG = {
         "release_mode":   "snap",
         "snap": {
             "movable_path":     "/World/parts/rod_16mm",
-            "debug":            True,   # log snap gate pos/rot err each ~30 ticks
+            "debug":            False,  # log snap gate pos/rot err each ~30 ticks
             "parent_body_path": "/World/task_board/task_board_color/root_001/_188_028",
             "target_pos":       (0.24681, 0.16982, 1.057),    # = place_pos (mesh-frame)
             "target_rot":       (0.7071, 0.7071, 0.0, 0.0),  # wxyz, from extract 'final' orn
@@ -359,7 +359,7 @@ PART_CONFIG = {
         "release_mode":   "snap",
         "snap": {
             "movable_path":     "/World/parts/bolt_8mm",
-            "debug":            True,   # log snap gate pos/rot err each ~30 ticks
+            "debug":            False,  # log snap gate pos/rot err each ~30 ticks
             # Shared rack slot _188_028 with rod_16mm.
             "parent_body_path": "/World/task_board/task_board_color/root_001/_188_028",
             "target_pos":       (0.21531, 0.13135, 1.06),  # = place_pos (mesh-frame)

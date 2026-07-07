@@ -12,6 +12,8 @@ hands each part to the participant's `Policy`, and grades the result
 | `run_pick_place.py`       | Eval harness. Sets up sim, spawns missing parts, walks `part_order`, instantiates the selected `Policy`, drives it through each part, then grades. Has the stuck detector (`_diagnose_stuck`) and the `_grade_task` summary. |
 | `policy_api.py`           | Participant-facing contract: `Policy` ABC + `EnvInfo` / `PartTarget` / `Observation` dataclasses. |
 | `policies/baseline_scripted.py` | Reference scripted policy (`BaselinePolicy`). Original EEPathFollower-driven pick-and-place — byte-identical to the pre-Policy-API runner output. |
+| `policies/diffusion_lerobot.py`, `dp_server.py` | LeRobot Diffusion Policy sidecar example. The adapter runs in Isaac; the server runs in the model environment. |
+| `policies/pi05_lerobot.py`, `pi05_server.py` | LeRobot pi0.5 sidecar adapter and model-env inference server. |
 | `policies/template.py`    | Participant stub. Copy to `policies/<your_team>.py`, fill in `reset` / `act` / `is_done`, run with `--policy policies.<your_team>.MyPolicy`. |
 | `param_config.py`         | Single source of truth for non-pose config — `PART_DEFAULTS` / `PART_CONFIG`, `INIT_JOINT_TARGETS`, IK descriptor flags, phase-tuning constants, `SCENE_USD`, `enable_camera_*`, `PER_PART_TIMEOUT_STEPS`, `RESULTS_JSON_PATH`. **No `pick_pos` lives here** — see `part_init_poses.json`. |
 | `part_init_poses.json`    | Per-part spawn pose (`pos`, `orn`) + hand-tuned `pick_z`. Pick x/y come from `pos`. Re-running `extract_part_poses.py` preserves `pick_z`. |
@@ -31,6 +33,7 @@ Run from the repo root — `uv run` finds `pyproject.toml` automatically:
 uv run python task/run_pick_place.py                                  # baseline policy
 uv run python task/run_pick_place.py --policy policies.my_team.MyPolicy
 uv run python task/run_pick_place.py --results-json out/results.json  # dump per-part pass/fail
+uv run python task/run_pick_place.py --record-video artifacts/head.mp4 # record an MP4 rollout
 ```
 
 A standalone Omniverse-launcher Isaac Sim still works:
@@ -38,6 +41,11 @@ A standalone Omniverse-launcher Isaac Sim still works:
 
 `--policy` defaults to `policies.baseline_scripted.BaselinePolicy`.
 `--results-json` overrides `pc.RESULTS_JSON_PATH`.
+`--record-video` writes one camera stream to MP4; select the stream with
+`--record-video-camera {head,L_wrist,R_wrist}` and the frame rate with
+`--record-video-fps`. `--max-steps`, `--max-sim-seconds`, and
+`--max-parts` end a run early while still writing JSON/video, which is
+useful for smoke tests.
 
 Edit `pc.part_order` to choose which parts to run. All 9 parts are
 pre-resident in `scene_init.usd`; any `part_order` entry that *isn't* in
@@ -73,6 +81,31 @@ Per-part loop:
 Full schema in `policy_api.py`; reference implementation in
 `policies/baseline_scripted.py`.
 
+## Learned-policy sidecars
+
+The LeRobot examples keep model inference out of Isaac's Python process:
+
+- `policies/diffusion_lerobot.py` talks to `dp_server.py`.
+- `policies/pi05_lerobot.py` talks to `pi05_server.py`.
+
+The Isaac-side adapter rebuilds the training observation from
+`Observation`, sends `{state, head, left, right, task}` over a
+length-prefixed pickle pipe, and converts the returned action into an
+Isaac `ArticulationAction`. The model server must run under the model
+environment's Python, selected with `DP_SERVER_PY` or `PI05_SERVER_PY`.
+
+For pi0.5, prefer the wrapper from the repo root:
+
+```bash
+LEROBOT_ROOT=/path/to/lerobot \
+PI05_EVAL_MAX_STEPS=500 \
+./scripts/eval_pi05_roco.sh /path/to/checkpoint/pretrained_model
+```
+
+The current runner holds the R arm at its initial pose, so learned
+policies that output 14-D bimanual actions only have their left 7-D slice
+executed unless the runner's R-action merge path is extended.
+
 ## Config primer (`param_config.py`)
 
 **Scene** — `SCENE_USD = "../scene_init.usd"`, resolved relative to
@@ -89,7 +122,8 @@ enable_camera_output    = False  # bind sensors so RGB/depth are readable from P
 
 When `enable_camera_output = True`, the harness binds the three cameras
 and surfaces frames via `Observation.rgb` / `depth` / `intrinsics` to
-the policy.
+the policy. `--record-video` also enables camera binding for the selected
+stream even when `enable_camera_output` is `False`.
 
 **IK descriptor mode** — three modes per arm via the (`OWNS_LIFT_*`,
 `OWNS_TORSO_*`) flag pair:
@@ -186,15 +220,9 @@ from backend`.
 
 **Fix:** point both paths at a *static* prim that snap will never
 target. `param_config.py` currently ships pointing both at
-`/World/parts/rod_16mm` (`L_object_prim_path` / `R_object_prim_path`,
-marked `# static`).
-
-⚠️ **Stale in the 9-part task:** `rod_16mm` is no longer a
-`PERMANENT_PART` — it is now picked and snapped like every other snap
-part, so `snap_attach` authors a `FixedJoint` on it. That makes it
-exactly the kind of prim this gotcha warns against. Point both paths at
-the static task board instead — `/World/task_board/task_board_color`
-(static collision geometry, never snapped).
+`/World/task_board/task_board_color` (`L_object_prim_path` /
+`R_object_prim_path`), which is static collision geometry and is never
+snapped.
 
 ### 3. DomeLight `color_0C0C0C.exr` texture errors
 

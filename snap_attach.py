@@ -422,8 +422,8 @@ class SnapAttacher:
         # Rotation gate: rot_tol_deg < 0 disables it (axis-symmetric movables).
         rot_ok = True if self.rot_tol_deg < 0 else (rot_err < self.rot_tol_deg)
 
+        self._tick += 1
         if self.debug:
-            self._tick += 1
             if self._tick % self.debug_every == 0:
                 self._log(pos_err, rot_err, pos_ok, rot_ok, m_cur, dp)
 
