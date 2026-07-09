@@ -42,10 +42,10 @@ def _resize_rgb(img):
         return out[:_IMG_H, :_IMG_W].astype(np.uint8)
 
 
-def _euler_xyz_to_quat_wxyz(rx, ry, rz):
+def _rotvec_to_quat_wxyz(rx, ry, rz):
     from scipy.spatial.transform import Rotation
 
-    x, y, z, w = Rotation.from_euler("xyz", [rx, ry, rz]).as_quat()
+    x, y, z, w = Rotation.from_rotvec([rx, ry, rz]).as_quat()
     return np.array([w, x, y, z], dtype=np.float64)
 
 
@@ -194,7 +194,7 @@ class Pi05LeRobotPolicy(Policy):
         if not np.isfinite(action[:7]).all():
             raise RuntimeError(f"pi0.5 action contains non-finite values: {action[:7]}")
         pos = action[:3]
-        quat = _euler_xyz_to_quat_wxyz(action[3], action[4], action[5])
+        quat = _rotvec_to_quat_wxyz(action[3], action[4], action[5])
         grip = float(np.clip(action[6], 0, 1)) * GRIPPER_OPEN_LIMIT
         return self.L.forward(pos, quat, grip)
 

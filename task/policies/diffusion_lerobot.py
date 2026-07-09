@@ -14,7 +14,7 @@ example works around both:
     pickle pipe (see `dp_server.py`); lerobot is never imported here.
   * Each step it rebuilds the training-time `observation.state` + 3 RGB images,
     gets a 14-D action back, takes the left-arm slice
-    [xyz + euler_xyz + gripper], converts euler->quat, and drives the L-arm IK.
+    [xyz + rotvec + gripper], converts rotvec->quat, and drives the L-arm IK.
 
 Self-contained by design: it depends only on the public `policy_api` surface
 (`EnvInfo`, `Observation`) plus `param_config`, so it drops into the devkit
@@ -74,11 +74,10 @@ def _resize_rgb(img):
         return out[:_IMG_H, :_IMG_W].astype(np.uint8)
 
 
-def _euler_xyz_to_quat_wxyz(rx, ry, rz):
-    """Decode the model's orientation output. Uses scipy's intrinsic 'xyz'
-    convention — match this to however your own policy encodes orientation."""
+def _rotvec_to_quat_wxyz(rx, ry, rz):
+    """Decode the dataset-style rotation-vector orientation output."""
     from scipy.spatial.transform import Rotation
-    x, y, z, w = Rotation.from_euler("xyz", [rx, ry, rz]).as_quat()
+    x, y, z, w = Rotation.from_rotvec([rx, ry, rz]).as_quat()
     return np.array([w, x, y, z], dtype=np.float64)
 
 
@@ -185,7 +184,7 @@ class DiffusionLeRobotPolicy(Policy):
         self._last_action = a
         # left arm slice: [x, y, z, rx, ry, rz, gripper_ratio]
         pos = a[:3]
-        quat = _euler_xyz_to_quat_wxyz(a[3], a[4], a[5])
+        quat = _rotvec_to_quat_wxyz(a[3], a[4], a[5])
         grip = float(np.clip(a[6], 0, 1)) * GRIPPER_OPEN_LIMIT
         return self.L.forward(pos, quat, grip)
 

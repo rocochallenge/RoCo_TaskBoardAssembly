@@ -16,7 +16,7 @@ inference and sends observations from the RoCo task runner to it.
 The adapter expects the RoCo dataset action layout:
 
 ```text
-left xyz + left xyz Euler + left gripper + right xyz + right xyz Euler + right gripper
+left xyz + left rotvec + left gripper + right xyz + right rotvec + right gripper
 ```
 
 The current task runner still holds the R arm fixed, so only the left 7-D

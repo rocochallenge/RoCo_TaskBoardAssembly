@@ -373,11 +373,11 @@ right-arm end-effector pose when matching datasets that include it.
 The current learned-policy adapters expect a 14-D action:
 
 ```text
-left xyz + left xyz Euler + left gripper + right xyz + right xyz Euler + right gripper
+left xyz + left rotvec + left gripper + right xyz + right rotvec + right gripper
 ```
 
 The runner still holds the R arm at its initial pose by default, so these
-adapters execute only the left-arm slice `[xyz + euler + gripper]`. Extend the
+adapters execute only the left-arm slice `[xyz + rotvec + gripper]`. Extend the
 runner's R-action path before treating the right half of the action as active
 bimanual control.
 
